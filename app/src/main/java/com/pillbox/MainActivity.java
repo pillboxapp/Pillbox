@@ -1,5 +1,6 @@
 package com.pillbox;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.View;
 import android.widget.TextView;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
@@ -66,6 +68,12 @@ public class MainActivity extends AppCompatActivity implements DetailedViewFragm
     }
 
     public void onListFragmentInteraction(DailyViewRow item) {
+
+    }
+
+    public void goToCalendar(View view) {
+        Intent myIntent = new Intent(MainActivity.this, CalendarActivity.class);
+        MainActivity.this.startActivity(myIntent);
 
     }
 }
