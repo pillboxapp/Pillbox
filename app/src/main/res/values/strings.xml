@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Pillbox</string>
+    <string name="db_name">PillboxDB</string>
+
+    <string name="skip_pill_button_title">Skip Pill</string>
+    <string name="remind_me_button_title">Remind Me</string>
+    <string name="take_pill_button_title">Take Pill</string>
+    <string name="daily_button_title">Daily</string>
+    <string name="calendar_button_title">Calendar</string>
+    <string name="settings_button_title">Settings</string>
+    <string name="change_account_button_title">Change Account</string>
+    <string name="add_account_button_title">Add Account</string>
 </resources>
