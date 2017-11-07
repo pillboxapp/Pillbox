@@ -12,4 +12,7 @@
     <string name="settings_button_title">Settings</string>
     <string name="change_account_button_title">Change Account</string>
     <string name="add_account_button_title">Add Account</string>
+    <string name="overview">Overview</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
 </resources>
