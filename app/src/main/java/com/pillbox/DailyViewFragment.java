@@ -27,7 +27,7 @@ public class DailyViewFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private MyItemRecyclerViewAdapter mAdapter;
+    private DailyViewRowRecyclerViewAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,7 +71,7 @@ public class DailyViewFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            mAdapter = new MyItemRecyclerViewAdapter(DailyViewContent.Items, mListener);
+            mAdapter = new DailyViewRowRecyclerViewAdapter(DailyViewContent.Items, mListener);
             recyclerView.setAdapter(mAdapter);
 
         }
@@ -82,9 +82,7 @@ public class DailyViewFragment extends Fragment {
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
         // Populate the grid
-        Date currentDate = ((MainActivity)getActivity()).getCurrentDate();
-
-        DailyViewContent.loadItems(currentDate);
+        this.reloadData();
     }
 
     @Override
@@ -104,6 +102,13 @@ public class DailyViewFragment extends Fragment {
         super.onDetach();
         mListener = null;
         mAdapter = null;
+    }
+
+    public void reloadData() {
+        Date currentDate = ((MainActivity)getActivity()).getCurrentDate();
+
+        DailyViewContent.loadItems(currentDate);
+        this.mAdapter.notifyDataSetChanged();
     }
 
     /**

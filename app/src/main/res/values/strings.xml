@@ -2,6 +2,8 @@
     <string name="app_name">Pillbox</string>
     <string name="db_name">PillboxDB</string>
 
+    <string name="side_effects">Side Effects:</string>
+
     <string name="skip_pill_button_title">Skip Pill</string>
     <string name="remind_me_button_title">Remind Me</string>
     <string name="take_pill_button_title">Take Pill</string>

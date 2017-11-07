@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -21,6 +22,10 @@ import com.pillbox.DailyViewContent.DailyViewRow;
  */
 
 class PillboxDB {
+    /**
+     * This should be treated as a static class. The sqliteDB should be set when the app is started
+     * and the app should use that instance for its entire lifecycle.
+     */
     private static SQLiteDatabase sqliteDB;
 
     private PillboxDB() { }
@@ -91,23 +96,26 @@ class PillboxDB {
     static void insertDummyData() {
         sqliteDB.execSQL("DELETE FROM Medication");
         sqliteDB.execSQL("INSERT INTO Medication Values(NULL, 'Test Medication', 'Test Description', NULL, NULL, NULL)");
+        sqliteDB.execSQL("INSERT INTO Medication Values(NULL, 'Test Medication2', 'Test Description2', NULL, NULL, NULL)");
 
         sqliteDB.execSQL("DELETE FROM User");
         sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
 
         sqliteDB.execSQL("DELETE FROM Header");
         sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 1, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 1)");
-        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 1, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 2)");
-        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 1, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 3)");
-        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 1, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 4)");
+        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 2, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 2)");
+        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 2, 3, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 3)");
+        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 2, 4, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 4)");
+        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 1, datetime(datetime(CURRENT_TIMESTAMP, 'localtime'), '+1 day'), 1, 1)");
+        sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 2, 3, datetime(datetime(CURRENT_TIMESTAMP, 'localtime'), '-1 day'), 1, 3)");
     }
 
     static ArrayList<DailyViewRow> getHeadersForDay(Date currentDate) {
         ArrayList<DailyViewRow> headers = new ArrayList<>();
-        String dateString = new SimpleDateFormat("YYYY-MM-dd", Locale.US).format(currentDate);
 
+        String dateString = Globals.formatDate("YYYY-MM-dd", currentDate);
         // Get all headers for the current day
-        String query = MessageFormat.format("SELECT M.Name, H.Date, S.Name FROM Header H " +
+        String query = MessageFormat.format("SELECT M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName FROM Header H " +
                 "INNER JOIN Medication M On M.ID = H.Medication_ID " +
                 "INNER JOIN Status S On S.ID = H.Status_ID " +
                 "WHERE Date >= date(''{0}'') " +
@@ -115,16 +123,27 @@ class PillboxDB {
 
         Cursor cursor = sqliteDB.rawQuery(query, null);
 
+        // Create header objects from returned data
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                String pillName = cursor.getString(0);
-                String date = cursor.getString(1);
-                Globals.Status status = Globals.Status.valueOf(cursor.getString(2));
-                headers.add(new DailyViewRow(pillName, date, status));
+                String pillName = getCursorString(cursor, "MedName");
+                String pillDesc = getCursorString(cursor, "Description");
+                int dosage = getCursorInt(cursor, "Dosage");
+                String date = getCursorString(cursor, "Date");
+                Globals.Status status = Globals.Status.valueOf(getCursorString(cursor, "StatusName"));
+                headers.add(new DailyViewRow(pillName, pillDesc, dosage, date, status));
             }
             cursor.close();
         }
         return headers;
+    }
+
+    private static String getCursorString(Cursor cursor, String colName) {
+        return cursor.getString(cursor.getColumnIndex(colName));
+    }
+
+    private static int getCursorInt(Cursor cursor, String colName) {
+        return cursor.getInt(cursor.getColumnIndex(colName));
     }
 
     private static void createTable(String tableName, String[] columns) {

@@ -14,12 +14,28 @@
         android:background="?attr/colorPrimary"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <TextView
-            android:id="@+id/current_date"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="November 5, 2017"/>
+            android:orientation="horizontal">
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_keyboard_arrow_left_black_24px"
+                android:layout_weight="1"
+                android:onClick="decreaseDate"/>
+            <TextView
+                android:id="@+id/current_date"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent" />
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_keyboard_arrow_right_black_24px"
+                android:onClick="increaseDate"/>
+        </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
     <fragment class="com.pillbox.DetailedViewFragment"
@@ -34,13 +50,11 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:id="@+id/daily_view_fragment"
-        tools:layout="@layout/fragment_item_list"
-        />
+        tools:layout="@layout/fragment_item_list" />
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        >
+        android:layout_height="?attr/actionBarSize">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

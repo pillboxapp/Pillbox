@@ -6,33 +6,45 @@
     android:orientation="vertical">
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:src="@drawable/ic_launcher_background"
         android:layout_weight="1"/>
     <TextView
+        android:id="@+id/detailed_view_pill_name"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Lunesta"
+        android:layout_height="0dp"
         android:layout_weight="1"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_weight="1">
-        <TextView
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Side Effects:\ntest"
-            android:layout_weight="1"/>
+            android:orientation="vertical"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/side_effects"/>
+            <TextView
+                android:id="@+id/detailed_view_pill_description"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/detailed_view_pill_time"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Take 1 pill at 9:00 PM"
             android:layout_weight="1"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_weight="1">
         <Button

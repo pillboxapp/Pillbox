@@ -17,12 +17,12 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyViewRowRecyclerViewAdapter.ViewHolder> {
 
     private final List<DailyViewRow> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyItemRecyclerViewAdapter(List<DailyViewRow> items, OnListFragmentInteractionListener listener) {
+    DailyViewRowRecyclerViewAdapter(List<DailyViewRow> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -38,7 +38,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mPillNameView.setText(mValues.get(position).pillName);
-        holder.mDateView.setText(mValues.get(position).date);
+        holder.mDateView.setText(mValues.get(position).displayTime);
 
         holder.mStatusView.setImageResource(getStatusImageResource(mValues.get(position).statusName));
 
