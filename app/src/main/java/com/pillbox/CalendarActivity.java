@@ -91,5 +91,8 @@ public class CalendarActivity extends AppCompatActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
     }
-
+    public void goToMain(View view) {
+        Intent myIntent = new Intent(CalendarActivity.this, MainActivity.class);
+        CalendarActivity.this.startActivity(myIntent);
+    }
 }

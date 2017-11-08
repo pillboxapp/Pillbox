@@ -43,7 +43,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/daily_button_title"/>
+                android:text="@string/daily_button_title"
+                android:onClick="goToMain"/>
             <Button
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
