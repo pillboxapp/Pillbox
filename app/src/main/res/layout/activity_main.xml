@@ -23,17 +23,23 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_keyboard_arrow_left_black_24px"
                 android:layout_weight="1"
+                android:contentDescription="@string/date_backward_desc"
+                android:background="?android:attr/selectableItemBackground"
                 android:onClick="decreaseDate"/>
             <TextView
                 android:id="@+id/current_date"
                 android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:textSize="@dimen/date_size"
                 android:layout_height="match_parent" />
             <ImageButton
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:src="@drawable/ic_keyboard_arrow_right_black_24px"
+                android:contentDescription="@string/date_forward_desc"
+                android:background="?android:attr/selectableItemBackground"
                 android:onClick="increaseDate"/>
         </LinearLayout>
     </android.support.v7.widget.Toolbar>

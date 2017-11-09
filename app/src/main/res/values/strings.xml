@@ -3,6 +3,10 @@
     <string name="db_name">PillboxDB</string>
 
     <string name="side_effects">Side Effects:</string>
+    <string name="overview">Overview</string>
+    <string name="pill_image_desc">A picture of the chosen pill</string>
+    <string name="date_forward_desc">Go to next day</string>
+    <string name="date_backward_desc">Go to previous day</string>
 
     <string name="skip_pill_button_title">Skip Pill</string>
     <string name="remind_me_button_title">Remind Me</string>
@@ -12,7 +16,4 @@
     <string name="settings_button_title">Settings</string>
     <string name="change_account_button_title">Change Account</string>
     <string name="add_account_button_title">Add Account</string>
-    <string name="overview">Overview</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
 </resources>

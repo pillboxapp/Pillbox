@@ -5,65 +5,78 @@
     tools:context="com.pillbox.DetailedViewFragment"
     android:orientation="vertical">
     <ImageView
+        android:layout_marginTop="@dimen/text_margin"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:src="@drawable/ic_launcher_background"
+        android:contentDescription="@string/pill_image_desc"
         android:layout_weight="1"/>
     <TextView
         android:id="@+id/detailed_view_pill_name"
+        android:layout_marginStart="@dimen/text_margin"
+        android:textSize="@dimen/pill_name_size"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/text_margin"
         android:layout_weight="1"/>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_weight="1">
-        <LinearLayout
-            android:layout_width="0dp"
+        <RelativeLayout
+            android:id="@+id/description_side_effects"
             android:layout_height="match_parent"
+            android:layout_width="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_alignParentStart="true">
             <TextView
+                android:id="@+id/side_effects"
+                android:layout_marginStart="@dimen/text_margin"
+                android:textSize="@dimen/description_size"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
                 android:text="@string/side_effects"/>
             <TextView
                 android:id="@+id/detailed_view_pill_description"
+                android:layout_marginStart="@dimen/description_margin"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_below="@id/side_effects" />
+        </RelativeLayout>
         <TextView
             android:id="@+id/detailed_view_pill_time"
-            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
-    </LinearLayout>
-    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:gravity="center">
         <Button
-            android:layout_width="0dp"
+            android:id="@+id/skip_pill"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
-            android:layout_weight="1"
-            android:text="@string/skip_pill_button_title"/>
+            android:text="@string/skip_pill_button_title"
+            android:layout_alignParentStart="true" />
         <Button
-            android:layout_width="0dp"
+            android:id="@+id/remind_me"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
-            android:layout_weight="1"
-            android:text="@string/remind_me_button_title"/>
+            android:text="@string/remind_me_button_title"
+            android:layout_toEndOf="@+id/skip_pill" />
         <Button
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
-            android:layout_weight="1"
-            android:text="@string/take_pill_button_title"/>
+            android:text="@string/take_pill_button_title"
+            android:layout_toEndOf="@+id/remind_me" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>
