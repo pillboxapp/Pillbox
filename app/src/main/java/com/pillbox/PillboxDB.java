@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
+import java.sql.Blob;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,6 +63,17 @@ class PillboxDB {
             }
         );
 
+        createTable("MedicationSchedule", new String[]{
+                "ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT",
+                "Medication_ID INTEGER",
+                "Day_Of_Week INTEGER",
+                "Time VARCHAR"
+            },
+            new String[] {
+                "Medication"
+            }
+        );
+
         createTable("Header", new String[] {
                 "ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT",
                 "User_ID INTEGER",
@@ -81,6 +93,15 @@ class PillboxDB {
         insertData();
     }
 
+    static void insertMedication(String medicationName, String description, Blob picture) {
+        execFormattedSql("INSERT INTO Medication Values(NULL, ''{0}'', ''{1}'', {2}, NULL, NULL)", medicationName, description, picture);
+    }
+
+    static void insertMedicationSchedule(String medicationName, Globals.DayOfWeek dayOfWeek, String time) {
+        execFormattedSql("INSERT INTO MedicationSchedule Values(NULL, (Select ID From Medication Where Name = ''{0}''), {1}, ''{2}'')",
+                medicationName, dayOfWeek, time);
+    }
+
     private static void insertData() {
         sqliteDB.execSQL("DELETE FROM Status");
         insertStatus(Globals.Status.SKIPPED);
@@ -90,16 +111,19 @@ class PillboxDB {
     }
 
     private static void insertStatus(Globals.Status status) {
-        sqliteDB.execSQL(MessageFormat.format("INSERT INTO Status Values(NULL, ''{0}'')", status.toString()));
+        execFormattedSql("INSERT INTO Status Values(NULL, ''{0}'')", status.toString());
     }
 
     static void insertDummyData() {
         sqliteDB.execSQL("DELETE FROM Medication");
-        sqliteDB.execSQL("INSERT INTO Medication Values(NULL, 'Test Medication', 'Test Description', NULL, NULL, NULL)");
-        sqliteDB.execSQL("INSERT INTO Medication Values(NULL, 'Test Medication2', 'Test Description2', NULL, NULL, NULL)");
+        insertMedication("Test Medication", "Test Description", null);
+        insertMedication("Test Medication2", "Test Description2", null);
 
         sqliteDB.execSQL("DELETE FROM User");
         sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
+
+        sqliteDB.execSQL("DELETE FROM MedicationSchedule");
+        insertMedicationSchedule("Test Medication", Globals.DayOfWeek.MONDAY, "06:00");
 
         sqliteDB.execSQL("DELETE FROM Header");
         sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 1, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 1)");
@@ -121,7 +145,7 @@ class PillboxDB {
                 "WHERE Date >= date(''{0}'') " +
                 "AND Date < date(''{0}'', ''+1 day'')", dateString);
 
-        Cursor cursor = sqliteDB.rawQuery(query, null);
+        Cursor cursor = runQuery(query);
 
         // Create header objects from returned data
         if (cursor != null) {
@@ -136,6 +160,14 @@ class PillboxDB {
             cursor.close();
         }
         return headers;
+    }
+
+    private static void execFormattedSql(String query, Object... params) {
+        sqliteDB.execSQL(MessageFormat.format(query, params));
+    }
+
+    private static Cursor runQuery(String query) {
+        return sqliteDB.rawQuery(query, null);
     }
 
     private static String getCursorString(Cursor cursor, String colName) {
