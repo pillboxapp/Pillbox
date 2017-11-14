@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-
 public class MainActivity extends AppCompatActivity implements DetailedViewFragment.OnFragmentInteractionListener,
         DailyViewFragment.OnListFragmentInteractionListener {
     private Date currentDate;
@@ -92,6 +91,11 @@ public class MainActivity extends AppCompatActivity implements DetailedViewFragm
 
     public void goToCalendar(View view) {
         Intent myIntent = new Intent(MainActivity.this, CalendarActivity.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
+    public void goToAddPill(View view) {
+        Intent myIntent = new Intent(MainActivity.this, AddPillActivity.class);
         MainActivity.this.startActivity(myIntent);
     }
 
