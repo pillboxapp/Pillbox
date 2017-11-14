@@ -63,9 +63,12 @@ class PillboxDB {
             }
         );
 
+        // This is the table that will be used to create rows in the Header table
         createTable("MedicationSchedule", new String[]{
                 "ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT",
+                "User_ID",
                 "Medication_ID INTEGER",
+                "Dosage INTEGER",
                 "Day_Of_Week INTEGER",
                 "Time VARCHAR"
             },
@@ -97,9 +100,10 @@ class PillboxDB {
         execFormattedSql("INSERT INTO Medication Values(NULL, ''{0}'', ''{1}'', {2}, NULL, NULL)", medicationName, description, picture);
     }
 
-    static void insertMedicationSchedule(String medicationName, Globals.DayOfWeek dayOfWeek, String time) {
-        execFormattedSql("INSERT INTO MedicationSchedule Values(NULL, (Select ID From Medication Where Name = ''{0}''), {1}, ''{2}'')",
-                medicationName, dayOfWeek, time);
+    static void insertMedicationSchedule(String user, String medicationName, int dosage, Globals.DayOfWeek dayOfWeek, String time) {
+        execFormattedSql("INSERT INTO MedicationSchedule Values(NULL, (Select ID From User Where Name = ''{0}''), " +
+                "(Select ID From Medication Where Name = ''{1}''), ''{2}'', ''{3}'', ''{4}'')",
+                user, dosage, medicationName, dayOfWeek, time);
     }
 
     private static void insertData() {
@@ -123,7 +127,7 @@ class PillboxDB {
         sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
 
         sqliteDB.execSQL("DELETE FROM MedicationSchedule");
-        insertMedicationSchedule("Test Medication", Globals.DayOfWeek.MONDAY, "06:00");
+        insertMedicationSchedule("Test User", "Test Medication", 1, Globals.DayOfWeek.MONDAY, "06:00");
 
         sqliteDB.execSQL("DELETE FROM Header");
         sqliteDB.execSQL("INSERT INTO Header Values(NULL, 1, 1, 1, datetime(CURRENT_TIMESTAMP, 'localtime'), 1, 1)");
@@ -155,6 +159,7 @@ class PillboxDB {
                 int dosage = getCursorInt(cursor, "Dosage");
                 String date = getCursorString(cursor, "Date");
                 Globals.Status status = Globals.Status.valueOf(getCursorString(cursor, "StatusName"));
+
                 headers.add(new DailyViewRow(pillName, pillDesc, dosage, date, status));
             }
             cursor.close();
@@ -188,6 +193,7 @@ class PillboxDB {
         for (String key: foreignKeys) {
             colList.add(MessageFormat.format("FOREIGN KEY({0}_ID) REFERENCES {0}(ID)", key));
         }
-        sqliteDB.execSQL(MessageFormat.format("CREATE TABLE IF NOT EXISTS {0} ({1})", tableName, TextUtils.join(", ", colList)));
+
+        execFormattedSql("CREATE TABLE IF NOT EXISTS {0} ({1})", tableName, TextUtils.join(", ", colList));
     }
 }
