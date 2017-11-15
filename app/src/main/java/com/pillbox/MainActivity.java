@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.pillbox.DailyViewContent.DailyViewRow;
 
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements DetailedViewFragm
 
     public void goToCalendar(View view) {
         Intent myIntent = new Intent(MainActivity.this, CalendarActivity.class);
-        MainActivity.this.startActivity(myIntent);
+        MainActivity.this.startActivityForResult(myIntent, 1);
     }
 
     public void goToAddPill(View view) {
@@ -114,9 +115,28 @@ public class MainActivity extends AppCompatActivity implements DetailedViewFragm
         this.resetDetailedText();
     }
 
+    private void changeDate(Date date) {
+        this.setDate(date);
+        DailyViewFragment dailyView = (DailyViewFragment)getSupportFragmentManager().findFragmentById(R.id.daily_view_fragment);
+        dailyView.reloadData();
+        this.resetDetailedText();
+    }
+
+
     private void setDate(Date newDate) {
         this.currentDate = newDate;
         TextView dateText = findViewById(R.id.current_date);
         dateText.setText(Globals.formatDate("MMM dd, YYYY", this.currentDate));
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                Date date = (Date) data.getSerializableExtra("date");
+                changeDate(date);
+
+            }
+        }
     }
 }

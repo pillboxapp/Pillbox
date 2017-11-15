@@ -19,6 +19,7 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class CalendarActivity extends AppCompatActivity {
@@ -42,12 +43,11 @@ public class CalendarActivity extends AppCompatActivity {
         widget.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                Context context = getApplicationContext();
-                CharSequence text = date.toString();
-                int duration = Toast.LENGTH_SHORT;
+                Intent intent = new Intent();
+                intent.putExtra("date", date.getDate());
+                setResult(RESULT_OK, intent);
+                finish();
 
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
             }
         });
     }
@@ -90,7 +90,6 @@ public class CalendarActivity extends AppCompatActivity {
         spinner.setAdapter(dataAdapter);
     }
     public void goToMain(View view) {
-        Intent myIntent = new Intent(CalendarActivity.this, MainActivity.class);
-        CalendarActivity.this.startActivity(myIntent);
+        finish();
     }
 }
