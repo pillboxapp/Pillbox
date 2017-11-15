@@ -111,7 +111,7 @@ class PillboxDB {
         insertHeadersForMedication(user, medicationName, dosage, dayOfWeek, time);
     }
 
-    static void insertHeadersForMedication(String user, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+    private static void insertHeadersForMedication(String user, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
         final int NUM_WEEKS = 4;
 
         for (int i = 0; i < NUM_WEEKS; i++) {
@@ -126,15 +126,21 @@ class PillboxDB {
     }
 
     private static void insertStatuses() {
-        sqliteDB.execSQL("DELETE FROM Status");
-        insertStatus(Globals.Status.SKIPPED);
-        insertStatus(Globals.Status.TAKEN);
-        insertStatus(Globals.Status.TIME_TO_TAKE);
-        insertStatus(Globals.Status.UPCOMING);
+        Cursor cursor = runFormattedQuery("Select * From Status");
+        if (cursor == null || cursor.getCount() == 0) {
+            insertStatus(Globals.Status.SKIPPED);
+            insertStatus(Globals.Status.TAKEN);
+            insertStatus(Globals.Status.TIME_TO_TAKE);
+            insertStatus(Globals.Status.UPCOMING);
+        }
     }
 
     private static void insertStatus(Globals.Status status) {
-        execFormattedSql("INSERT INTO Status Values(NULL, ''{0}'')", status.toString());
+        execFormattedSql("INSERT INTO Status Values(NULL, ''{0}'')", status);
+    }
+
+    static void updateStatus(int rowID, Globals.Status newStatus) {
+        execFormattedSql("UPDATE Header Set Status_ID = (Select ID From Status Where Name = ''{0}'') Where ID = {1}", newStatus, rowID);
     }
 
     static void insertDummyData() {
@@ -162,7 +168,7 @@ class PillboxDB {
         String dateString = Globals.formatDate("YYYY-MM-dd", currentDate);
         // Get all headers for the current day
 
-        Cursor cursor = runFormattedQuery("SELECT M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName FROM Header H " +
+        Cursor cursor = runFormattedQuery("SELECT H.ID HeaderID, M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName FROM Header H " +
                 "INNER JOIN Medication M On M.ID = H.Medication_ID " +
                 "INNER JOIN Status S On S.ID = H.Status_ID " +
                 "WHERE Date >= date(''{0}'') " +
@@ -171,6 +177,7 @@ class PillboxDB {
         // Create header objects from returned data
         if (cursor != null) {
             while (cursor.moveToNext()) {
+                int rowID = getCursorInt(cursor, "HeaderID");
                 String pillName = getCursorString(cursor, "MedName");
                 String pillDesc = getCursorString(cursor, "Description");
                 double dosage = getCursorDouble(cursor, "Dosage");
@@ -178,7 +185,7 @@ class PillboxDB {
                 //Globals.Status status = Globals.Status.valueOf(getCursorString(cursor, "StatusName"));
                 Globals.Status status = getCursorEnum(cursor, "StatusName", Globals.Status.class);
 
-                headers.add(new DailyViewRow(pillName, pillDesc, dosage, date, status));
+                headers.add(new DailyViewRow(rowID, pillName, pillDesc, dosage, date, status));
             }
             cursor.close();
         }

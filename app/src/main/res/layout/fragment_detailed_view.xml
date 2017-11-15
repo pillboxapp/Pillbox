@@ -63,6 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
             android:text="@string/skip_pill_button_title"
+            android:onClick="skipPill"
             android:layout_alignParentStart="true" />
         <Button
             android:id="@+id/remind_me"
@@ -74,6 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
             android:text="@string/take_pill_button_title"
+            android:onClick="takePill"
             android:layout_toEndOf="@+id/remind_me" />
 
     </RelativeLayout>

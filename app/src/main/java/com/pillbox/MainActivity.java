@@ -6,25 +6,21 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements DetailedViewFragment.OnFragmentInteractionListener,
-        DailyViewFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements DailyViewFragment.OnListFragmentInteractionListener {
     private Date currentDate;
+    private DailyViewRow selectedRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +62,8 @@ public class MainActivity extends AppCompatActivity implements DetailedViewFragm
         return true;
     }
 
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
     public void onListFragmentInteraction(DailyViewRow item) {
+        this.selectedRow = item;
         String pillText = item.dosage > 1 ? "pills": "pill";
         String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.displayTime);
         this.updateDetailedText(item.pillName, item.pillDesc, pillTime);
@@ -86,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements DetailedViewFragm
         time.setText(pillTime);
     }
 
-    private void resetDetailedText() {
+    private void resetDetailedView() {
         this.updateDetailedText("", "", "");
     }
 
@@ -109,19 +102,34 @@ public class MainActivity extends AppCompatActivity implements DetailedViewFragm
     }
 
     private void changeDate(int numDays) {
-        this.setDate(Globals.addDays(this.currentDate, numDays));
-        DailyViewFragment dailyView = (DailyViewFragment)getSupportFragmentManager().findFragmentById(R.id.daily_view_fragment);
-        dailyView.reloadData();
-        this.resetDetailedText();
+        this.changeDate(Globals.addDays(this.currentDate, numDays));
     }
 
     private void changeDate(Date date) {
         this.setDate(date);
         DailyViewFragment dailyView = (DailyViewFragment)getSupportFragmentManager().findFragmentById(R.id.daily_view_fragment);
         dailyView.reloadData();
-        this.resetDetailedText();
+        this.resetDetailedView();
     }
 
+    private void updatePillStatus(Globals.Status newStatus) {
+        // Don't do anything if no pill is selected
+        if (selectedRow == null) {
+            return;
+        }
+
+        PillboxDB.updateStatus(this.selectedRow.rowID, newStatus);
+        this.selectedRow.updateStatus(newStatus);
+        Globals.updateStatusImage((ImageView)findViewById(R.id.status_icon), newStatus);
+    }
+
+    public void skipPill(View view) {
+        this.updatePillStatus(Globals.Status.SKIPPED);
+    }
+
+    public void takePill(View view) {
+        this.updatePillStatus(Globals.Status.TAKEN);
+    }
 
     private void setDate(Date newDate) {
         this.currentDate = newDate;

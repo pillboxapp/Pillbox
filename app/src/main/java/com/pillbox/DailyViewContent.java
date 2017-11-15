@@ -41,20 +41,30 @@ class DailyViewContent {
 
     // Represents one row on the grid
     static class DailyViewRow {
+        final int rowID;
         final String pillName;
         final String pillDesc;
         final double dosage;
         final Date date;
         final String displayTime;
-        final Globals.Status statusName;
+        private Globals.Status statusName;
 
-        DailyViewRow(String pillName, String pillDesc, double dosage, String date, Globals.Status statusName) {
+        DailyViewRow(int rowID, String pillName, String pillDesc, double dosage, String date, Globals.Status statusName) {
+            this.rowID = rowID;
             this.pillName = pillName;
             this.pillDesc = pillDesc;
             this.dosage = dosage;
             this.date = Globals.parseDate("yyyy-MM-dd HH:mm", date);
             this.displayTime = Globals.formatDate("hh:mm a", this.date);
             this.statusName = statusName;
+        }
+
+        void updateStatus(Globals.Status newStatus) {
+            this.statusName = newStatus;
+        }
+
+        Globals.Status getStatus() {
+            return this.statusName;
         }
     }
 }

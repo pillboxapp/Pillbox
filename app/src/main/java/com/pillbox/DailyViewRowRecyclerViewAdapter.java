@@ -40,7 +40,7 @@ public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyV
         holder.mPillNameView.setText(mValues.get(position).pillName);
         holder.mDateView.setText(mValues.get(position).displayTime);
 
-        holder.mStatusView.setImageResource(getStatusImageResource(mValues.get(position).statusName));
+        Globals.updateStatusImage(holder.mStatusView, mValues.get(position).getStatus());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,16 +52,6 @@ public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyV
                 }
             }
         });
-    }
-
-    private int getStatusImageResource(Globals.Status status) {
-        switch (status) {
-            case SKIPPED: return R.drawable.red_circle;
-            case TAKEN: return R.drawable.green_circle;
-            case UPCOMING: return R.drawable.grey_circle;
-            case TIME_TO_TAKE: return R.drawable.yellow_circle;
-        }
-        return R.drawable.grey_circle;
     }
 
     @Override

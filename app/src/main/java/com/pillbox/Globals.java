@@ -1,5 +1,7 @@
 package com.pillbox;
 
+import android.widget.ImageView;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -115,5 +117,19 @@ class Globals {
         date.add(Calendar.DAY_OF_MONTH, diff);
 
         return formatDate("yyyy-MM-dd HH:mm", date);
+    }
+
+    private static int getStatusImageResource(Globals.Status status) {
+        switch (status) {
+            case SKIPPED: return R.drawable.red_circle;
+            case TAKEN: return R.drawable.green_circle;
+            case UPCOMING: return R.drawable.grey_circle;
+            case TIME_TO_TAKE: return R.drawable.yellow_circle;
+        }
+        return R.drawable.grey_circle;
+    }
+
+    static void updateStatusImage(ImageView icon, Globals.Status status) {
+        icon.setImageResource(getStatusImageResource(status));
     }
 }
