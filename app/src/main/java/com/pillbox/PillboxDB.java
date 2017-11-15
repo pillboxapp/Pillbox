@@ -185,6 +185,19 @@ class PillboxDB {
         return headers;
     }
 
+    static ArrayList<String> getMedications(){
+        ArrayList<String> meds = new ArrayList<>();
+        Cursor cursor = runFormattedQuery("SELECT Name from Medication");
+        if (cursor != null) {
+            while(cursor.moveToNext()){
+                String pillName = getCursorString(cursor, "Name");
+                meds.add(pillName);
+            }
+            cursor.close();
+        }
+        return  meds;
+    }
+
     private static void execFormattedSql(String query, Object... formatArgs) {
         sqliteDB.execSQL(MessageFormat.format(query, formatArgs));
     }

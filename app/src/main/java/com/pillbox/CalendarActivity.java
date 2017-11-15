@@ -60,17 +60,15 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     public void addItemsToSpinner(){
-        final List<String> list = new ArrayList<String>();
-        list.add("Overview");
-        list.add("pill 1");
-        list.add("pill 2");
-        list.add("pill 3");
+        final List<String> list = PillboxDB.getMedications();
+        list.add(0, "Overview");
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner_nav);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Reload calendar for selected medication
+                //updateCalendar
                 Context context = getApplicationContext();
                 CharSequence text = list.get(position);
                 int duration = Toast.LENGTH_SHORT;
