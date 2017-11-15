@@ -43,16 +43,16 @@ class DailyViewContent {
     static class DailyViewRow {
         final String pillName;
         final String pillDesc;
-        final int dosage;
+        final double dosage;
         final Date date;
         final String displayTime;
         final Globals.Status statusName;
 
-        DailyViewRow(String pillName, String pillDesc, int dosage, String date, Globals.Status statusName) {
+        DailyViewRow(String pillName, String pillDesc, double dosage, String date, Globals.Status statusName) {
             this.pillName = pillName;
             this.pillDesc = pillDesc;
             this.dosage = dosage;
-            this.date = Globals.parseDate("yyyy-MM-dd HH:mm:ss", date);
+            this.date = Globals.parseDate("yyyy-MM-dd HH:mm", date);
             this.displayTime = Globals.formatDate("hh:mm a", this.date);
             this.statusName = statusName;
         }
