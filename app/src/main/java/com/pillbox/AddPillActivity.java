@@ -21,7 +21,7 @@ import static com.pillbox.PillboxDB.insertMedicationSchedule;
 
 public class AddPillActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText pillText, descText, dosageText, timeText;
+    EditText pillText, descText, dosageText; //editTime;
     Button createButton, timeButton;
     CheckBox sundayCheckBox, mondayCheckBox, tuesdayCheckBox, wednesdayCheckBox, thursdayCheckBox, fridayCheckBox, saturdayCheckBox, everydayCheckBox;
 
@@ -37,7 +37,8 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         pillText = (EditText)findViewById(R.id.pillText);
         descText = (EditText)findViewById(R.id.descText);
       // dateText = (EditText)findViewById(R.id.dateText);
-      //  timeText = (EditText)findViewById(R.id.timeText);
+       // editTime = (EditText)findViewById(R.id.editTime);
+        //editTime.setShowSoftInputOnFocus(false);
         dosageText = (EditText)findViewById(R.id.dosageText);
         timeButton = (Button)findViewById(R.id.timeButton);
         createButton = (Button)findViewById(R.id.createButton);
