@@ -2,10 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="@string/settings_button_title" />
+        android:id="@+id/Settingsitem"
+        android:title="@string/settings_button_title"
+        android:onClick="goToSettings"/>
     <item
-        android:title="@string/add_account_button_title"/>
+        android:id="@+id/AddAccountitem"
+        android:title="@string/add_account_button_title"
+        android:onClick="goToAddAccount"/>
     <item
-        android:title="@string/change_account_button_title"/>
+        android:id="@+id/ChangeAccountitem"
+        android:title="@string/change_account_button_title"
+        android:onClick="goToChangeAccount"/>
 
 </menu>

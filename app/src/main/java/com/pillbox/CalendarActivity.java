@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -57,6 +58,21 @@ public class CalendarActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    public void goToSettings(MenuItem item) {
+        Intent myIntent = new Intent(CalendarActivity.this, Settings.class);
+        CalendarActivity.this.startActivity(myIntent);
+    }
+
+    public void goToAddAccount(MenuItem item) {
+        Intent myIntent = new Intent(CalendarActivity.this, AddAccount.class);
+        CalendarActivity.this.startActivity(myIntent);
+    }
+
+    public void goToChangeAccount(MenuItem item) {
+        Intent myIntent = new Intent(CalendarActivity.this, ChangeAccount.class);
+        CalendarActivity.this.startActivity(myIntent);
     }
 
     public void addItemsToSpinner(){

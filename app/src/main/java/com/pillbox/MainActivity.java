@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -90,6 +91,21 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
     public void goToAddPill(View view) {
         Intent myIntent = new Intent(MainActivity.this, AddPillActivity.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
+    public void goToSettings(MenuItem item) {
+        Intent myIntent = new Intent(MainActivity.this, Settings.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
+    public void goToAddAccount(MenuItem item) {
+        Intent myIntent = new Intent(MainActivity.this, AddAccount.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
+    public void goToChangeAccount(MenuItem item) {
+        Intent myIntent = new Intent(MainActivity.this, ChangeAccount.class);
         MainActivity.this.startActivity(myIntent);
     }
 
