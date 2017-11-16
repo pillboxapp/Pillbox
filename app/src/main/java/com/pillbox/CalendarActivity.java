@@ -39,7 +39,7 @@ public class CalendarActivity extends AppCompatActivity {
         addItemsToSpinner();
 
         widget = (MaterialCalendarView) findViewById(R.id.calendarView);
-        widget.addDecorator(new HighlightWeekendsDecorator());
+        widget.addDecorators(new HighlightWeekendsDecorator(), new GreenDecorator());
         widget.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
