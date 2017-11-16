@@ -14,13 +14,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
+import com.pillbox.DailyViewRowRecyclerViewAdapter.ViewHolder;
 
 import java.text.MessageFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements DailyViewFragment.OnListFragmentInteractionListener {
     private Date currentDate;
-    private DailyViewRow selectedRow;
+    private ViewHolder selectedRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +63,9 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         return true;
     }
 
-    public void onListFragmentInteraction(DailyViewRow item) {
-        this.selectedRow = item;
+    public void onListFragmentInteraction(ViewHolder holder) {
+        this.selectedRow = holder;
+        DailyViewRow item = holder.mItem;
         String pillText = item.dosage > 1 ? "pills": "pill";
         String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.displayTime);
         this.updateDetailedText(item.pillName, item.pillDesc, pillTime);
@@ -118,9 +120,10 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             return;
         }
 
-        PillboxDB.updateStatus(this.selectedRow.rowID, newStatus);
-        this.selectedRow.updateStatus(newStatus);
-        Globals.updateStatusImage((ImageView)findViewById(R.id.status_icon), newStatus);
+        PillboxDB.updateStatus(this.selectedRow.mItem.rowID, newStatus);
+        this.selectedRow.mItem.updateStatus(newStatus);
+
+        Globals.updateStatusImage(this.selectedRow.mStatusView, newStatus);
     }
 
     public void skipPill(View view) {
