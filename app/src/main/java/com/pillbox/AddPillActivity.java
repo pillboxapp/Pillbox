@@ -21,8 +21,8 @@ import static com.pillbox.PillboxDB.insertMedicationSchedule;
 
 public class AddPillActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText pillText, descText, dosageText; //editTime;
-    Button createButton, timeButton;
+    EditText pillText, descText, dosageText, editTime;
+    Button createButton;
     CheckBox sundayCheckBox, mondayCheckBox, tuesdayCheckBox, wednesdayCheckBox, thursdayCheckBox, fridayCheckBox, saturdayCheckBox, everydayCheckBox;
 
     public AddPillActivity() {
@@ -37,12 +37,11 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         pillText = (EditText)findViewById(R.id.pillText);
         descText = (EditText)findViewById(R.id.descText);
       // dateText = (EditText)findViewById(R.id.dateText);
-       // editTime = (EditText)findViewById(R.id.editTime);
+       editTime = (EditText)findViewById(R.id.editTime);
         //editTime.setShowSoftInputOnFocus(false);
         dosageText = (EditText)findViewById(R.id.dosageText);
-        timeButton = (Button)findViewById(R.id.timeButton);
+        //editTime = (Button)findViewById(R.id.editTime);
         createButton = (Button)findViewById(R.id.createButton);
-        timeButton = (Button)findViewById(R.id.timeButton);
         sundayCheckBox = (CheckBox)findViewById(R.id.sundayBox);
         mondayCheckBox = (CheckBox)findViewById(R.id.mondayBox);
         tuesdayCheckBox = (CheckBox)findViewById(R.id.tuesdayBox);
@@ -72,7 +71,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         mTimePicker = new TimePickerDialog(AddPillActivity.this, AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                timeButton.setText(selectedHour + ":" + selectedMinute);
+                editTime.setText(selectedHour + ":" + selectedMinute);
             }
         }, hour, minute, false);
         mTimePicker.setTitle("Select Time");
@@ -85,47 +84,47 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-
     public void onClick(View view)
     {
+
         PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), null);
         if(everydayCheckBox.isChecked())
         {
-            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SUNDAY, timeButton.getText().toString());
-            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.MONDAY, timeButton.getText().toString());
-            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, timeButton.getText().toString());
-            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.WEDNESDAY, timeButton.getText().toString());
-            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.THURSDAY, timeButton.getText().toString());
-            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.FRIDAY, timeButton.getText().toString());
-            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SATURDAY, timeButton.getText().toString());
+            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SUNDAY, editTime.getText().toString());
+            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.MONDAY, editTime.getText().toString());
+            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, editTime.getText().toString());
+            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.WEDNESDAY, editTime.getText().toString());
+            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.THURSDAY, editTime.getText().toString());
+            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.FRIDAY, editTime.getText().toString());
+            insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SATURDAY, editTime.getText().toString());
         }
         else
         {
             if (sundayCheckBox.isChecked()) {
-                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SUNDAY, timeButton.getText().toString());
+                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SUNDAY, editTime.getText().toString());
             }
             if (mondayCheckBox.isChecked()) {
-                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.MONDAY, timeButton.getText().toString());
+                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.MONDAY, editTime.getText().toString());
             }
             if (tuesdayCheckBox.isChecked()) {
-                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, timeButton.getText().toString());
+                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, editTime.getText().toString());
             }
             if (wednesdayCheckBox.isChecked()) {
-                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.WEDNESDAY, timeButton.getText().toString());
+                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.WEDNESDAY, editTime.getText().toString());
             }
             if (thursdayCheckBox.isChecked()) {
-                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.THURSDAY, timeButton.getText().toString());
+                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.THURSDAY, editTime.getText().toString());
             }
             if (fridayCheckBox.isChecked()) {
-                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.FRIDAY, timeButton.getText().toString());
+                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.FRIDAY, editTime.getText().toString());
             }
             if (saturdayCheckBox.isChecked()) {
-                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SATURDAY, timeButton.getText().toString());
+                insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.SATURDAY, editTime.getText().toString());
             }
         }
-        //insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.FRIDAY, timeButton.getText().toString());
+        //insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.FRIDAY, editTime.getText().toString());
 
-        //PillboxDB.insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, timeButton.getText().toString());
+        //PillboxDB.insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, editTime.getText().toString());
 
         goToMainActivity();
     }
