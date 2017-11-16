@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         SQLiteDatabase sqliteDB;
         try {
             // TODO: Remove the following statement when done changing the database
-            this.deleteDatabase(getResources().getString(R.string.db_name));
+            //this.deleteDatabase(getResources().getString(R.string.db_name));
 
             sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             PillboxDB.setDB(sqliteDB);
             PillboxDB.createTables();
             // TODO: Remove the following statement when we insert real data
-            PillboxDB.insertDummyData();
+            //PillboxDB.insertDummyData();
         }
         catch (SQLiteException ex) {
             Log.e(getClass().getSimpleName(), "Could not create or open the database");

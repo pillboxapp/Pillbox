@@ -21,7 +21,6 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
     EditText pillText, descText, dateText, dosageText, timeText;
     Button createButton;
-    SQLiteDatabase db;
 
     public AddPillActivity() {
     }
@@ -69,11 +68,11 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
     public void onClick(View view)
     {
+        PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), null);
 
-        insertMedication(pillText.getText().toString(), descText.getText().toString(), null);
-        insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, timeText.getText().toString());
+        PillboxDB.insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, timeText.getText().toString());
+
         goToMainActivity();
-        return;
     }
 
 }

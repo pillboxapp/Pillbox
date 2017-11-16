@@ -1,5 +1,6 @@
 package com.pillbox;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -97,30 +98,82 @@ class PillboxDB {
         );
 
         insertStatuses();
+
+//        sqliteDB.execSQL("DELETE FROM User");
+//        sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
     }
 
     static void insertMedication(String medicationName, String description, Blob picture) {
-        execFormattedSql("INSERT INTO Medication Values(NULL, ''{0}'', ''{1}'', {2}, NULL, NULL)", medicationName, description, picture);
+        //execFormattedSql("INSERT INTO Medication Values(NULL, ''{0}'', ''{1}'', {2}, NULL, NULL)", medicationName, description, picture);
+        ContentValues cv = new ContentValues();
+        cv.put("Name", medicationName);
+        cv.put("Description", description);
+
+        sqliteDB.insertOrThrow("Medication", null, cv);
     }
 
     static void insertMedicationSchedule(String user, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
-        execFormattedSql("INSERT INTO MedicationSchedule Values(NULL, (Select ID From User Where Name = ''{0}''), " +
-                "(Select ID From Medication Where Name = ''{1}''), {2}, ''{3}'', ''{4}'')",
-                user, medicationName, dosage, dayOfWeek, time);
+        Cursor cursor1 = runFormattedQuery("Select * From Medication");
+        while (cursor1.moveToNext()) {
+            String name = getCursorString(cursor1, "Name");
+            System.out.println(name);
+        }
+        Cursor cursor2 = runFormattedQuery("Select * From User");
+        while (cursor2.moveToNext()) {
+            String username = getCursorString(cursor2, "Name");
+            System.out.println(username);
+        }
+        Cursor userCursor = runFormattedQuery("Select ID From User Where Name = ''{0}''", user);
+        int userID = 0;
+        while (userCursor.moveToNext()) {
+            userID = getCursorInt(userCursor, "ID");
+        }
 
-        insertHeadersForMedication(user, medicationName, dosage, dayOfWeek, time);
+        Cursor medCursor = runFormattedQuery("Select ID From Medication Where Name = ''{0}''", medicationName);
+        int medID = 0;
+        while (medCursor.moveToNext()) {
+            medID = getCursorInt(medCursor, "ID");
+        }
+//        execFormattedSql("INSERT INTO MedicationSchedule Values(NULL, (Select ID From User Where Name = ''{0}''), " +
+//                "(Select ID From Medication Where Name = ''{1}''), {2}, ''{3}'', ''{4}'')",
+//                user, medicationName, dosage, dayOfWeek, time);
+        ContentValues cv = new ContentValues();
+        cv.put("User_ID", userID);
+        cv.put("Medication_ID", medID);
+        cv.put("Dosage", dosage);
+        cv.put("Day_Of_Week", dayOfWeek.toString());
+        cv.put("Time", time);
+        sqliteDB.insertOrThrow("MedicationSchedule", null, cv);
+
+
+        insertHeadersForMedication(userID, medID, dosage, dayOfWeek, time);
     }
 
-    private static void insertHeadersForMedication(String user, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+    private static void insertHeadersForMedication(int userID, int medicationID, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
         final int NUM_WEEKS = 4;
+
+        Cursor statusCursor = runFormattedQuery("Select ID From Status Where Name = ''{0}''", Globals.Status.UPCOMING);
+        int statusID = 0;
+        while (statusCursor.moveToNext()) {
+            statusID = getCursorInt(statusCursor, "ID");
+        }
 
         for (int i = 0; i < NUM_WEEKS; i++) {
             String pillTime = Globals.nextDateTime(i, dayOfWeek, time);
             // Don't add an entry for the current day if the time has already passed
             if (pillTime != null) {
-                execFormattedSql("INSERT Into Header Values(NULL, (Select ID From User Where Name = ''{0}''), " +
-                        "(Select ID From Medication Where Name = ''{1}''), {2}, ''{3}'', 1, " +
-                        "(Select ID From Status Where Name = ''UPCOMING''))", user, medicationName, dosage, pillTime);
+//                execFormattedSql("INSERT Into Header Values(NULL, (Select ID From User Where Name = ''{0}''), " +
+//                        "(Select ID From Medication Where Name = ''{1}''), {2}, ''{3}'', 1, " +
+//                        "(Select ID From Status Where Name = ''UPCOMING''))", user, medicationName, dosage, pillTime);
+                ContentValues cv = new ContentValues();
+                cv.put("User_ID", userID);
+                cv.put("Medication_ID", medicationID);
+                cv.put("Status_ID", statusID);
+                cv.put("Dosage", dosage);
+                cv.put("Date", pillTime);
+                cv.put("Active_Flag", 1);
+                sqliteDB.insertOrThrow("Header", null, cv);
+
             }
         }
     }
@@ -144,10 +197,10 @@ class PillboxDB {
     }
 
     static void insertDummyData() {
-        sqliteDB.execSQL("DELETE FROM Medication");
-        insertMedication("Test Medication", "Test Description", null);
-        insertMedication("Test Medication2", "Test Description2", null);
-        insertMedication("Test Medication3", "Test Description3", null);
+        //sqliteDB.execSQL("DELETE FROM Medication");
+
+//        insertMedication("Pill Name", "Description", null);
+
 
         sqliteDB.execSQL("DELETE FROM User");
         sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
@@ -156,9 +209,12 @@ class PillboxDB {
 
         sqliteDB.execSQL("DELETE FROM MedicationSchedule");
 
-        insertMedicationSchedule("Test User", "Test Medication", 1, Globals.DayOfWeek.TUESDAY, "06:00");
-        insertMedicationSchedule("Test User", "Test Medication2", 1.5, Globals.DayOfWeek.TUESDAY, "22:00");
+        insertMedication("Test Medication", "Test Description", null);
+        insertMedicationSchedule("Test User", "Test Medication", 1, Globals.DayOfWeek.THURSDAY, "06:00");
+        insertMedication("Test Medication2", "Test Description2", null);
+        insertMedicationSchedule("Test User", "Test Medication2", 1.5, Globals.DayOfWeek.THURSDAY, "22:00");
         insertMedicationSchedule("Test User", "Test Medication2", 1.5, Globals.DayOfWeek.MONDAY, "20:00");
+        insertMedication("Test Medication3", "Test Description3", null);
         insertMedicationSchedule("Test User", "Test Medication3", 2, Globals.DayOfWeek.WEDNESDAY, "18:00");
     }
 
@@ -182,7 +238,6 @@ class PillboxDB {
                 String pillDesc = getCursorString(cursor, "Description");
                 double dosage = getCursorDouble(cursor, "Dosage");
                 String date = getCursorString(cursor, "Date");
-                //Globals.Status status = Globals.Status.valueOf(getCursorString(cursor, "StatusName"));
                 Globals.Status status = getCursorEnum(cursor, "StatusName", Globals.Status.class);
 
                 headers.add(new DailyViewRow(rowID, pillName, pillDesc, dosage, date, status));
@@ -206,7 +261,14 @@ class PillboxDB {
     }
 
     private static void execFormattedSql(String query, Object... formatArgs) {
-        sqliteDB.execSQL(MessageFormat.format(query, formatArgs));
+        sqliteDB.beginTransaction();
+        try {
+            sqliteDB.execSQL(MessageFormat.format(query, formatArgs));
+            sqliteDB.setTransactionSuccessful();
+        }
+        finally {
+            sqliteDB.endTransaction();
+        }
     }
 
     private static Cursor runFormattedQuery(String query, Object... formatArgs) {
