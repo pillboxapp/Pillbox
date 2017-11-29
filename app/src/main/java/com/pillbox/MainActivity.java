@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     private Date currentDate;
     private ViewHolder selectedRow;
 
+    private static boolean initialized = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,21 +36,27 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         // Show the current date on the screen to start
         this.setDate(Globals.getCurrentDate());
 
-        SQLiteDatabase sqliteDB;
-        try {
-            // TODO: Remove the following statement when done changing the database
-            //this.deleteDatabase(getResources().getString(R.string.db_name));
+        if (!initialized) {
+            Globals.userID = 1;
+            SQLiteDatabase sqliteDB;
+            try {
+                // TODO: Remove the following statement when done changing the database
+                //this.deleteDatabase(getResources().getString(R.string.db_name));
 
-            sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
+                sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
 
-            // Set the instance of sql to be used for the duration of the app's life
-            PillboxDB.setDB(sqliteDB);
-            PillboxDB.createTables();
-            // TODO: Remove the following statement when we insert real data
-            //PillboxDB.insertDummyData();
-        }
-        catch (SQLiteException ex) {
-            Log.e(getClass().getSimpleName(), "Could not create or open the database");
+                // Set the instance of sql to be used for the duration of the app's life
+                PillboxDB.setDB(sqliteDB);
+                PillboxDB.createTables();
+                // TODO: Remove the following statement when we insert real data
+                PillboxDB.insertDummyData();
+
+                PillboxDB.addMissingHeaders();
+
+                initialized = true;
+            } catch (SQLiteException ex) {
+                Log.e(getClass().getSimpleName(), "Could not create or open the database");
+            }
         }
     }
 
