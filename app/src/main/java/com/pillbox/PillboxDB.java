@@ -296,6 +296,25 @@ class PillboxDB {
         return dates;
     }
 
+    static ArrayList<CalendarDay> getGreenDates() throws ParseException {
+        ArrayList<CalendarDay> green = new ArrayList<>();
+        ArrayList<CalendarDay> red = getRedDates();
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H Inner JOIN Status S on H.Status_id = S.ID where S.name = ''{0}''", "TAKEN");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                if(!red.contains(day)){
+                    green.add(day);
+                }
+            }
+        }
+        return green;
+    }
+
     private static void execFormattedSql(String query, Object... formatArgs) {
         sqliteDB.beginTransaction();
         try {

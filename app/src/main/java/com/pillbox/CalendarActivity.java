@@ -41,7 +41,7 @@ public class CalendarActivity extends AppCompatActivity {
 
         widget = (MaterialCalendarView) findViewById(R.id.calendarView);
         try {
-            widget.addDecorator(new RedDecorator());
+            widget.addDecorators(new RedDecorator(), new GreenDecorator());
         } catch (ParseException e) {
             e.printStackTrace();
         }

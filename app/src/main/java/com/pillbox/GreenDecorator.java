@@ -13,9 +13,12 @@ import android.graphics.drawable.shapes.OvalShape;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
-import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Highlight Saturdays and Sundays with a background
@@ -26,8 +29,10 @@ public class GreenDecorator implements DayViewDecorator {
     private final Drawable highlightDrawable;
     private final ShapeDrawable circleDrawable;
     private static final int color = Color.parseColor("#00ff00");
+    HashSet<CalendarDay> dates;
 
-    public GreenDecorator() {
+    public GreenDecorator() throws ParseException {
+        this.dates = new HashSet<CalendarDay>(PillboxDB.getGreenDates());
         highlightDrawable = new ColorDrawable(color);
         circleDrawable = new ShapeDrawable (new OvalShape ());
         circleDrawable.setIntrinsicHeight(5);
@@ -38,9 +43,7 @@ public class GreenDecorator implements DayViewDecorator {
 
     @Override
     public boolean shouldDecorate(CalendarDay day) {
-        day.copyTo(calendar);
-        int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
-        return weekDay == Calendar.THURSDAY || weekDay == Calendar.TUESDAY;
+        return dates.contains(day);
     }
 
     @Override
