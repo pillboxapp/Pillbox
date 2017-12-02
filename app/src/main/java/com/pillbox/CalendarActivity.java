@@ -17,6 +17,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +40,11 @@ public class CalendarActivity extends AppCompatActivity {
         addItemsToSpinner();
 
         widget = (MaterialCalendarView) findViewById(R.id.calendarView);
-        widget.addDecorators(new HighlightWeekendsDecorator(), new GreenDecorator());
+        try {
+            widget.addDecorator(new RedDecorator());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         widget.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {

@@ -9,12 +9,15 @@ import android.text.TextUtils;
 
 import java.sql.Blob;
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 /**
  * Created by aschey on 11/3/2017.
@@ -272,6 +275,25 @@ class PillboxDB {
             cursor.close();
         }
         return meds;
+    }
+
+    static ArrayList<CalendarDay> getRedDates() throws ParseException {
+        ArrayList<CalendarDay> dates = new ArrayList<>();
+        //Cursor cursor = runFormattedQuery("select Date from Header H "+
+          //      "Inner join Status S on H.Status_ID = S.ID " + "Where S.Name == ''{0}''", "Skipped;");
+
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H Inner JOIN Status S on H.Status_id = S.ID where S.name = ''{0}''", "SKIPPED");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                dates.add(day);
+            }
+        }
+        return dates;
     }
 
     private static void execFormattedSql(String query, Object... formatArgs) {
