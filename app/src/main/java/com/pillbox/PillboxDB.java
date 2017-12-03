@@ -296,10 +296,57 @@ class PillboxDB {
         return dates;
     }
 
+    static ArrayList<CalendarDay> getRedDates(String medication) throws ParseException {
+        ArrayList<CalendarDay> dates = new ArrayList<>();
+        //Cursor cursor = runFormattedQuery("select Date from Header H "+
+        //      "Inner join Status S on H.Status_ID = S.ID " + "Where S.Name == ''{0}''", "Skipped;");
+
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H " +
+                " INNER JOIN Status S on H.Status_id = S.ID " +
+                "INNER JOIN Medication M on H.Medication_ID = M.ID " +
+                "where S.name = ''{0}'' and M.Name = ''{1}''", "SKIPPED", medication);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                dates.add(day);
+            }
+        }
+        return dates;
+    }
+
     static ArrayList<CalendarDay> getGreenDates() throws ParseException {
         ArrayList<CalendarDay> green = new ArrayList<>();
         ArrayList<CalendarDay> red = getRedDates();
         Cursor cursor = runFormattedQuery("select Distinct Date from Header H Inner JOIN Status S on H.Status_id = S.ID where S.name = ''{0}''", "TAKEN");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                if(!red.contains(day)){
+                    green.add(day);
+                }
+            }
+        }
+        return green;
+    }
+
+    static ArrayList<CalendarDay> getGreenDates(String medication) throws ParseException {
+        ArrayList<CalendarDay> green = new ArrayList<>();
+        ArrayList<CalendarDay> red = getRedDates(medication);
+
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H " +
+                "INNER JOIN Status S on H.Status_id = S.ID " +
+                "INNER JOIN Medication M on H.Medication_ID = M.ID " +
+                "where S.name = ''{0}'' and M.Name = ''{1}''", "TAKEN", medication);
+
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 
         if (cursor != null){

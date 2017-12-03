@@ -26,7 +26,7 @@ import java.util.List;
 public class CalendarActivity extends AppCompatActivity {
 
     MaterialCalendarView widget;
-
+    Spinner spinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
@@ -36,10 +36,11 @@ public class CalendarActivity extends AppCompatActivity {
         Toolbar toolBar = findViewById(R.id.calendar_toolbar);
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
+        spinner = (Spinner) findViewById(R.id.spinner_nav);
         addItemsToSpinner();
 
         widget = (MaterialCalendarView) findViewById(R.id.calendarView);
+
         try {
             widget.addDecorators(new RedDecorator(), new GreenDecorator());
         } catch (ParseException e) {
@@ -68,18 +69,32 @@ public class CalendarActivity extends AppCompatActivity {
         final List<String> list = PillboxDB.getMedications();
         list.add(0, "Overview");
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner_nav);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Reload calendar for selected medication
                 //updateCalendar
                 Context context = getApplicationContext();
-                CharSequence text = list.get(position);
+                String text = list.get(position);
                 int duration = Toast.LENGTH_SHORT;
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
+                widget.removeDecorators();
+                if(text.equals("Overview")){
+                    try {
+                        widget.addDecorators(new RedDecorator(), new GreenDecorator());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    try {
+                        widget.addDecorators(new RedDecorator(text), new GreenDecorator(text));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override
@@ -90,7 +105,7 @@ public class CalendarActivity extends AppCompatActivity {
         });
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, list);
+                R.layout.spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
     }

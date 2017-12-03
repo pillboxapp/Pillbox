@@ -26,22 +26,30 @@ import java.util.HashSet;
 public class RedDecorator implements DayViewDecorator {
 
     private final Calendar calendar = Calendar.getInstance();
-    private final Drawable highlightDrawable;
-    private final ShapeDrawable circleDrawable;
+    private  Drawable highlightDrawable;
+    private  ShapeDrawable circleDrawable;
     private static final int color = Color.parseColor("#ff3333");
     private final HashSet<CalendarDay> dates;
 
     public RedDecorator() throws ParseException {
         this.dates = new HashSet<CalendarDay>(PillboxDB.getRedDates());
+        setDrawable();
+
+    }
+
+    public RedDecorator(String medication) throws ParseException {
+        this.dates = new HashSet<CalendarDay>(PillboxDB.getRedDates(medication));
+        setDrawable();
+
+    }
+    private void setDrawable(){
         highlightDrawable = new ColorDrawable(color);
         circleDrawable = new ShapeDrawable (new OvalShape ());
         circleDrawable.setIntrinsicHeight(5);
         circleDrawable.setIntrinsicWidth (5);
         circleDrawable.setAlpha(50);
         circleDrawable.getPaint ().setColor (color);
-
     }
-
     @Override
     public boolean shouldDecorate(CalendarDay day) {
         return dates.contains(day);
