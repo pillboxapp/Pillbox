@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -86,7 +87,12 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
     public void onClick(View view)
     {
-        PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), null);
+        try {
+            PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), null);
+        }
+        catch (SQLiteConstraintException ex) {
+            // TODO: Medication exists already, show error to user
+        }
         if(everydayCheckBox.isChecked())
         {
             for (Globals.DayOfWeek day: Globals.DayOfWeek.values()) {

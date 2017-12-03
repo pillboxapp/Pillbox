@@ -119,18 +119,11 @@ class PillboxDB {
     }
 
     static void insertMedication(String medicationName, String description, Blob picture) {
-        Cursor cursor = runFormattedQuery("Select * From Medication Where Name = ''{0}''", medicationName);
-
         ContentValues cv = new ContentValues();
         cv.put("Name", medicationName);
         cv.put("Description", description);
 
-        try {
-            sqliteDB.insertOrThrow("Medication", null, cv);
-        }
-        catch (SQLiteConstraintException ex) {
-            // Medication exists already, don't need to do anything
-        }
+        sqliteDB.insertOrThrow("Medication", null, cv);
     }
 
     static void insertMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
