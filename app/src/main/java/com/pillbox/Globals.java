@@ -63,6 +63,8 @@ class Globals {
         }
     }
 
+    static int userID;
+
     static String formatDate(String pattern, Date date) {
         return new SimpleDateFormat(pattern, Locale.US).format(date);
     }

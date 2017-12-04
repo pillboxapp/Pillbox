@@ -122,6 +122,6 @@ public class DailyViewFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(DailyViewRow item);
+        void onListFragmentInteraction(DailyViewRowRecyclerViewAdapter.ViewHolder item);
     }
 }

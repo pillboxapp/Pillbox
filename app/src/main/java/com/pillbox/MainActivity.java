@@ -15,13 +15,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
+import com.pillbox.DailyViewRowRecyclerViewAdapter.ViewHolder;
 
 import java.text.MessageFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements DailyViewFragment.OnListFragmentInteractionListener {
     private Date currentDate;
-    private DailyViewRow selectedRow;
+    private ViewHolder selectedRow;
+
+    private static boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,21 +37,27 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         // Show the current date on the screen to start
         this.setDate(Globals.getCurrentDate());
 
-        SQLiteDatabase sqliteDB;
-        try {
-            // TODO: Remove the following statement when done changing the database
-            this.deleteDatabase(getResources().getString(R.string.db_name));
+        if (!initialized) {
+            Globals.userID = 1;
+            SQLiteDatabase sqliteDB;
+            try {
+                // TODO: Remove the following statement when done changing the database
+                //this.deleteDatabase(getResources().getString(R.string.db_name));
 
-            sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
+                sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
 
-            // Set the instance of sql to be used for the duration of the app's life
-            PillboxDB.setDB(sqliteDB);
-            PillboxDB.createTables();
-            // TODO: Remove the following statement when we insert real data
-            PillboxDB.insertDummyData();
-        }
-        catch (SQLiteException ex) {
-            Log.e(getClass().getSimpleName(), "Could not create or open the database");
+                // Set the instance of sql to be used for the duration of the app's life
+                PillboxDB.setDB(sqliteDB);
+                PillboxDB.createTables();
+                // TODO: Remove the following statement when we insert real data
+                PillboxDB.insertDummyData();
+
+                PillboxDB.addMissingHeaders();
+
+                initialized = true;
+            } catch (SQLiteException ex) {
+                Log.e(getClass().getSimpleName(), "Could not create or open the database");
+            }
         }
     }
 
@@ -63,8 +72,9 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         return true;
     }
 
-    public void onListFragmentInteraction(DailyViewRow item) {
-        this.selectedRow = item;
+    public void onListFragmentInteraction(ViewHolder holder) {
+        this.selectedRow = holder;
+        DailyViewRow item = holder.mItem;
         String pillText = item.dosage > 1 ? "pills": "pill";
         String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.displayTime);
         this.updateDetailedText(item.pillName, item.pillDesc, pillTime);
@@ -134,9 +144,10 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             return;
         }
 
-        PillboxDB.updateStatus(this.selectedRow.rowID, newStatus);
-        this.selectedRow.updateStatus(newStatus);
-        Globals.updateStatusImage((ImageView)findViewById(R.id.status_icon), newStatus);
+        PillboxDB.updateStatus(this.selectedRow.mItem.rowID, newStatus);
+        this.selectedRow.mItem.updateStatus(newStatus);
+
+        Globals.updateStatusImage(this.selectedRow.mStatusView, newStatus);
     }
 
     public void skipPill(View view) {

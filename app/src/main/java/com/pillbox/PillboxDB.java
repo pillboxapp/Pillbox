@@ -1,25 +1,23 @@
 package com.pillbox;
 
-import android.content.Context;
-import android.content.res.Resources;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import java.sql.Blob;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
-
-import static java.lang.Enum.valueOf;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 /**
  * Created by aschey on 11/3/2017.
@@ -31,6 +29,7 @@ class PillboxDB {
      * and the app should use that instance for its entire lifecycle.
      */
     private static SQLiteDatabase sqliteDB;
+    private static final int WEEKS_TO_ADD = 4;
 
     private PillboxDB() { }
 
@@ -47,9 +46,11 @@ class PillboxDB {
                 "ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT",
                 "Name VARCHAR",
                 "Description VARCHAR",
-                "Picture BLOB",
-                "Color VARCHAR",
-                "Shape VARCHAR"
+                "Picture BLOB"
+            },
+            null,
+            new String[] {
+                "Name"
             }
         );
 
@@ -57,12 +58,20 @@ class PillboxDB {
                 "ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT",
                 "Name VARCHAR",
                 "Description VARCHAR"
+            },
+            null,
+            new String[] {
+                "Name"
             }
         );
 
         createTable("Status", new String[] {
                 "ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT",
                 "Name VARCHAR"
+            },
+            null,
+            new String[] {
+                "Name"
             }
         );
 
@@ -77,6 +86,12 @@ class PillboxDB {
             },
             new String[] {
                 "Medication"
+            },
+            new String[] {
+                "User_ID",
+                "Medication_ID",
+                "Day_Of_Week",
+                "Time"
             }
         );
 
@@ -86,13 +101,17 @@ class PillboxDB {
                 "Medication_ID INTEGER",
                 "Dosage REAL",
                 "Date DATETIME",
-                "Active_Flag INTEGER",
                 "Status_ID INTEGER"
             },
             new String[] {
                 "User",
                 "Medication",
                 "Status"
+            },
+            new String[] {
+                "User_ID",
+                "Medication_ID",
+                "Date"
             }
         );
 
@@ -100,27 +119,77 @@ class PillboxDB {
     }
 
     static void insertMedication(String medicationName, String description, Blob picture) {
-        execFormattedSql("INSERT INTO Medication Values(NULL, ''{0}'', ''{1}'', {2}, NULL, NULL)", medicationName, description, picture);
+        ContentValues cv = new ContentValues();
+        cv.put("Name", medicationName);
+        cv.put("Description", description);
+
+        sqliteDB.insertOrThrow("Medication", null, cv);
     }
 
-    static void insertMedicationSchedule(String user, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
-        execFormattedSql("INSERT INTO MedicationSchedule Values(NULL, (Select ID From User Where Name = ''{0}''), " +
-                "(Select ID From Medication Where Name = ''{1}''), {2}, ''{3}'', ''{4}'')",
-                user, medicationName, dosage, dayOfWeek, time);
+    static void insertMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+        int medID = getID("Medication", medicationName);
 
-        insertHeadersForMedication(user, medicationName, dosage, dayOfWeek, time);
+        ContentValues cv = new ContentValues();
+        cv.put("User_ID", Globals.userID);
+        cv.put("Medication_ID", medID);
+        cv.put("Dosage", dosage);
+        cv.put("Day_Of_Week", dayOfWeek.toString());
+        cv.put("Time", time);
+        sqliteDB.insertOrThrow("MedicationSchedule", null, cv);
+
+        insertHeadersForMedication(medID, dosage, dayOfWeek, time);
     }
 
-    private static void insertHeadersForMedication(String user, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
-        final int NUM_WEEKS = 4;
+    static void addMissingHeaders() {
+        Cursor cursor = runFormattedQuery("Select User_ID, Medication_ID, Dosage, Day_Of_Week, Time From MedicationSchedule");
+        while (cursor.moveToNext()) {
+            int userID = getCursorInt(cursor, "User_ID");
+            int medID = getCursorInt(cursor, "Medication_ID");
+            int dosage = getCursorInt(cursor, "Dosage");
+            Globals.DayOfWeek day =  getCursorEnum(cursor, "Day_Of_Week", Globals.DayOfWeek.class);
+            String time = getCursorString(cursor, "Time");
 
-        for (int i = 0; i < NUM_WEEKS; i++) {
+            insertHeadersForMedication(userID, medID, dosage, day, time);
+        }
+    }
+
+    static void deleteMedicationSchedule(String medicationName) {
+        String medID = getStringID("Medication", medicationName);
+        String[] params = { Integer.toString(Globals.userID), medID };
+        sqliteDB.delete("MedicationSchedule", "User_ID = ? and Medication_ID = ?", params);
+        // Delete all headers in the future
+        sqliteDB.delete("Header", "User_ID = ? and Medication_ID = ? and Date >= datetime(CURRENT_TIMESTAMP, 'localtime')", params);
+    }
+
+    static void updateMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+        deleteMedicationSchedule(medicationName);
+        insertMedicationSchedule(medicationName, dosage, dayOfWeek, time);
+    }
+
+    private static void insertHeadersForMedication(int medicationID, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+        insertHeadersForMedication(Globals.userID, medicationID, dosage, dayOfWeek, time);
+    }
+
+    private static void insertHeadersForMedication(int userID, int medicationID, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+        int statusID = getID("Status", Globals.Status.UPCOMING.toString());
+
+        for (int i = 0; i < WEEKS_TO_ADD; i++) {
             String pillTime = Globals.nextDateTime(i, dayOfWeek, time);
             // Don't add an entry for the current day if the time has already passed
             if (pillTime != null) {
-                execFormattedSql("INSERT Into Header Values(NULL, (Select ID From User Where Name = ''{0}''), " +
-                        "(Select ID From Medication Where Name = ''{1}''), {2}, ''{3}'', 1, " +
-                        "(Select ID From Status Where Name = ''UPCOMING''))", user, medicationName, dosage, pillTime);
+                ContentValues cv = new ContentValues();
+                cv.put("User_ID", userID);
+                cv.put("Medication_ID", medicationID);
+                cv.put("Status_ID", statusID);
+                cv.put("Dosage", dosage);
+                cv.put("Date", pillTime);
+                try {
+                    sqliteDB.insertOrThrow("Header", null, cv);
+                }
+                catch (SQLiteConstraintException ex) {
+                    // Already added, don't need to do anything
+                }
+
             }
         }
     }
@@ -136,43 +205,36 @@ class PillboxDB {
     }
 
     private static void insertStatus(Globals.Status status) {
-        execFormattedSql("INSERT INTO Status Values(NULL, ''{0}'')", status);
+        ContentValues cv = new ContentValues();
+        cv.put("Name", status.toString());
+
+        sqliteDB.insertOrThrow("Status", null, cv);
     }
 
     static void updateStatus(int rowID, Globals.Status newStatus) {
-        execFormattedSql("UPDATE Header Set Status_ID = (Select ID From Status Where Name = ''{0}'') Where ID = {1}", newStatus, rowID);
+        ContentValues cv = new ContentValues();
+        cv.put("Status_ID", getID("Status", newStatus.toString()));
+        sqliteDB.update("Header", cv, "ID = ?", new String[] { Integer.toString(rowID) });
     }
 
     static void insertDummyData() {
-        sqliteDB.execSQL("DELETE FROM Medication");
-        insertMedication("Test Medication", "Test Description", null);
-        insertMedication("Test Medication2", "Test Description2", null);
-        insertMedication("Test Medication3", "Test Description3", null);
-
         sqliteDB.execSQL("DELETE FROM User");
         sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
-
-        sqliteDB.execSQL("DELETE FROM Header");
-
-        sqliteDB.execSQL("DELETE FROM MedicationSchedule");
-
-        insertMedicationSchedule("Test User", "Test Medication", 1, Globals.DayOfWeek.TUESDAY, "06:00");
-        insertMedicationSchedule("Test User", "Test Medication2", 1.5, Globals.DayOfWeek.TUESDAY, "22:00");
-        insertMedicationSchedule("Test User", "Test Medication2", 1.5, Globals.DayOfWeek.MONDAY, "20:00");
-        insertMedicationSchedule("Test User", "Test Medication3", 2, Globals.DayOfWeek.WEDNESDAY, "18:00");
     }
 
     static ArrayList<DailyViewRow> getHeadersForDay(Date currentDate) {
         ArrayList<DailyViewRow> headers = new ArrayList<>();
 
         String dateString = Globals.formatDate("YYYY-MM-dd", currentDate);
-        // Get all headers for the current day
 
-        Cursor cursor = runFormattedQuery("SELECT H.ID HeaderID, M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName FROM Header H " +
+        // Get all headers for the current day
+        Cursor cursor = runFormattedQuery("SELECT H.ID HeaderID, M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName " +
+                "FROM Header H " +
                 "INNER JOIN Medication M On M.ID = H.Medication_ID " +
                 "INNER JOIN Status S On S.ID = H.Status_ID " +
-                "WHERE Date >= date(''{0}'') " +
-                "AND Date < date(''{0}'', ''+1 day'')", dateString);
+                "WHERE H.Date >= date(''{0}'') " +
+                "AND H.Date < date(''{0}'', ''+1 day'') " +
+                "AND H.User_ID = {1}", dateString, Globals.userID);
 
         // Create header objects from returned data
         if (cursor != null) {
@@ -182,7 +244,6 @@ class PillboxDB {
                 String pillDesc = getCursorString(cursor, "Description");
                 double dosage = getCursorDouble(cursor, "Dosage");
                 String date = getCursorString(cursor, "Date");
-                //Globals.Status status = Globals.Status.valueOf(getCursorString(cursor, "StatusName"));
                 Globals.Status status = getCursorEnum(cursor, "StatusName", Globals.Status.class);
 
                 headers.add(new DailyViewRow(rowID, pillName, pillDesc, dosage, date, status));
@@ -192,9 +253,13 @@ class PillboxDB {
         return headers;
     }
 
-    static ArrayList<String> getMedications(){
+    static ArrayList<String> getMedications() {
         ArrayList<String> meds = new ArrayList<>();
-        Cursor cursor = runFormattedQuery("SELECT Name from Medication");
+        // Get only medications that have schedules for the current user
+        Cursor cursor = runFormattedQuery("SELECT DISTINCT Name from Medication M " +
+                "Inner Join MedicationSchedule S On M.ID = S.Medication_ID " +
+                "Where S.User_ID = {0}", Globals.userID);
+
         if (cursor != null) {
             while(cursor.moveToNext()){
                 String pillName = getCursorString(cursor, "Name");
@@ -202,11 +267,110 @@ class PillboxDB {
             }
             cursor.close();
         }
-        return  meds;
+        return meds;
+    }
+
+    static ArrayList<CalendarDay> getRedDates() throws ParseException {
+        ArrayList<CalendarDay> dates = new ArrayList<>();
+        //Cursor cursor = runFormattedQuery("select Date from Header H "+
+          //      "Inner join Status S on H.Status_ID = S.ID " + "Where S.Name == ''{0}''", "Skipped;");
+
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H " +
+                                                "INNER JOIN Status S on H.Status_id = S.ID " +
+                                                "where S.name = ''{0}'' and " +
+                                                "H.User_ID = {1}", Globals.Status.SKIPPED, Globals.userID);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                dates.add(day);
+            }
+        }
+        return dates;
+    }
+
+    static ArrayList<CalendarDay> getRedDates(String medication) throws ParseException {
+        ArrayList<CalendarDay> dates = new ArrayList<>();
+        //Cursor cursor = runFormattedQuery("select Date from Header H "+
+        //      "Inner join Status S on H.Status_ID = S.ID " + "Where S.Name == ''{0}''", "Skipped;");
+
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H " +
+                " INNER JOIN Status S on H.Status_id = S.ID " +
+                "INNER JOIN Medication M on H.Medication_ID = M.ID " +
+                "where S.name = ''{0}'' and M.Name = ''{1}'' and " +
+                "H.User_ID = {2}", Globals.Status.SKIPPED, medication, Globals.userID);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                dates.add(day);
+            }
+        }
+        return dates;
+    }
+
+    static ArrayList<CalendarDay> getGreenDates() throws ParseException {
+        ArrayList<CalendarDay> green = new ArrayList<>();
+        ArrayList<CalendarDay> red = getRedDates();
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H " +
+                                                "INNER JOIN Status S on H.Status_id = S.ID " +
+                                                "where S.name = ''{0}'' and H.User_ID = {1}", Globals.Status.TAKEN, Globals.userID);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                if(!red.contains(day)){
+                    green.add(day);
+                }
+            }
+        }
+        return green;
+    }
+
+    static ArrayList<CalendarDay> getGreenDates(String medication) throws ParseException {
+        ArrayList<CalendarDay> green = new ArrayList<>();
+        ArrayList<CalendarDay> red = getRedDates(medication);
+
+        Cursor cursor = runFormattedQuery("select Distinct Date from Header H " +
+                "INNER JOIN Status S on H.Status_id = S.ID " +
+                "INNER JOIN Medication M on H.Medication_ID = M.ID " +
+                "where S.name = ''{0}'' and M.Name = ''{1}'' and " +
+                "H.User_ID = {2}", Globals.Status.TAKEN, medication, Globals.userID);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        if (cursor != null){
+            while(cursor.moveToNext()){
+                String s = getCursorString(cursor, "Date");
+                Date date = formatter.parse(s);
+                CalendarDay day = CalendarDay.from(date);
+                if(!red.contains(day)){
+                    green.add(day);
+                }
+            }
+        }
+        return green;
     }
 
     private static void execFormattedSql(String query, Object... formatArgs) {
-        sqliteDB.execSQL(MessageFormat.format(query, formatArgs));
+        sqliteDB.beginTransaction();
+        try {
+            sqliteDB.execSQL(MessageFormat.format(query, formatArgs));
+            sqliteDB.setTransactionSuccessful();
+        }
+        finally {
+            sqliteDB.endTransaction();
+        }
     }
 
     private static Cursor runFormattedQuery(String query, Object... formatArgs) {
@@ -229,17 +393,35 @@ class PillboxDB {
         return T.valueOf(c, getCursorString(cursor, colName));
     }
 
-    private static void createTable(String tableName, String[] columns) {
-        createTable(tableName, columns, new String[] {});
-    }
-
-    private static void createTable(String tableName, String[] columns, String[] foreignKeys) {
+    private static void createTable(String tableName, String[] columns, String[] foreignKeys, String[] uniqueCols) {
         ArrayList<String> colList = new ArrayList<>(Arrays.asList(columns));
 
-        for (String key: foreignKeys) {
-            colList.add(MessageFormat.format("FOREIGN KEY({0}_ID) REFERENCES {0}(ID)", key));
+        if (foreignKeys != null) {
+            for (String key : foreignKeys) {
+                colList.add(MessageFormat.format("FOREIGN KEY({0}_ID) REFERENCES {0}(ID)", key));
+            }
         }
 
-        execFormattedSql("CREATE TABLE IF NOT EXISTS {0} ({1})", tableName, TextUtils.join(", ", colList));
+        String uniqueClause = "";
+        if (uniqueCols != null) {
+            uniqueClause = MessageFormat.format(", UNIQUE({0})", TextUtils.join(", ", uniqueCols));
+        }
+
+
+        execFormattedSql("CREATE TABLE IF NOT EXISTS {0} ({1} {2})", tableName, TextUtils.join(", ", colList), uniqueClause);
+    }
+
+    private static int getID(String table, String name) {
+        Cursor cursor = runFormattedQuery("Select ID From {0} Where Name = ''{1}''", table, name);
+        int id = 0;
+        while (cursor.moveToNext()) {
+            id = getCursorInt(cursor, "ID");
+        }
+
+        return id;
+    }
+
+    private static String getStringID(String table, String name) {
+        return Integer.toString(getID(table, name));
     }
 }
