@@ -5,11 +5,13 @@ package com.pillbox;
  */
 
 import android.media.Image;
+import android.support.annotation.NonNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +39,13 @@ class DailyViewContent {
         // Reload data
         Items.clear();
         Items.addAll(returnedItems);
+        
+        // Sort items from earliest to latest
+        Collections.sort(Items);
     }
 
     // Represents one row on the grid
-    static class DailyViewRow {
+    static class DailyViewRow implements Comparable<DailyViewRow>{
         final int rowID;
         final String pillName;
         final String pillDesc;
@@ -65,6 +70,11 @@ class DailyViewContent {
 
         Globals.Status getStatus() {
             return this.statusName;
+        }
+
+        @Override
+        public int compareTo(@NonNull DailyViewRow other) {
+            return this.date.compareTo(other.date);
         }
     }
 }
