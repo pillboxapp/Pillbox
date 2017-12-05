@@ -8,7 +8,7 @@
         android:id="@+id/detailed_view_image"
         android:layout_marginTop="@dimen/text_margin"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="35dp"
         android:src="@drawable/ic_launcher_background"
         android:contentDescription="@string/pill_image_desc"
         android:layout_weight="1"/>
