@@ -18,13 +18,13 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import java.util.Calendar;
 
-import static com.pillbox.PillboxDB.insertMedication;
+import static com.pillbox.PillboxDB.insertUser;
 import static com.pillbox.PillboxDB.insertMedicationSchedule;
 
 public class AddAccount extends AppCompatActivity implements View.OnClickListener{
 
     EditText nameText;
-    Button addAccountButton;
+    Button addAccountButton, backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +33,7 @@ public class AddAccount extends AppCompatActivity implements View.OnClickListene
         setContentView(R.layout.activity_add_account);
 
         nameText = (EditText)findViewById(R.id.nameText);
+        backButton = (Button)findViewById(R.id.backButton);
         addAccountButton = (Button)findViewById(R.id.addAccountButton);
         addAccountButton.setOnClickListener(this);
     }
@@ -42,8 +43,15 @@ public class AddAccount extends AppCompatActivity implements View.OnClickListene
         AddAccount.this.startActivity(myIntent);
     }
 
+    public void backClick(View view)
+    {
+        goToMainActivity();
+        return;
+    }
+
     public void onClick(View view)
     {
+        insertUser(nameText.getText().toString());
         goToMainActivity();
         return;
     }

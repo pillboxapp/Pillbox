@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
                 PillboxDB.setDB(sqliteDB);
                 PillboxDB.createTables();
                 // TODO: Remove the following statement when we insert real data
-                PillboxDB.insertDummyData();
+                //PillboxDB.insertDummyData();
 
                 PillboxDB.addMissingHeaders();
 

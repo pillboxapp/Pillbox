@@ -222,6 +222,14 @@ class PillboxDB {
         sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
     }
 
+    static void insertUser(String name){
+        ContentValues cv = new ContentValues();
+        cv.put("Name", name);
+        cv.put("Description", "");
+
+        sqliteDB.insertOrThrow("User", null, cv);
+    }
+
     static ArrayList<DailyViewRow> getHeadersForDay(Date currentDate) {
         ArrayList<DailyViewRow> headers = new ArrayList<>();
 
@@ -268,6 +276,20 @@ class PillboxDB {
             cursor.close();
         }
         return meds;
+    }
+
+    static ArrayList<String> getUsers() {
+        ArrayList<String> users = new ArrayList<>();
+        Cursor cursor = runFormattedQuery("SELECT DISTINCT Name from User");
+
+        if (cursor != null) {
+            while(cursor.moveToNext()){
+                String name = getCursorString(cursor, "Name");
+                users.add(name);
+            }
+            cursor.close();
+        }
+        return users;
     }
 
     static ArrayList<CalendarDay> getRedDates() throws ParseException {
@@ -360,6 +382,15 @@ class PillboxDB {
             }
         }
         return green;
+    }
+
+    static int getUserID(String name){
+        Cursor cursor = runFormattedQuery("Select ID From User Where Name = ''{0}''", name);
+        int id = 0;
+        while (cursor.moveToNext()) {
+            id = getCursorInt(cursor, "ID");
+        }
+        return id;
     }
 
     private static void execFormattedSql(String query, Object... formatArgs) {

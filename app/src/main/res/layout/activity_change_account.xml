@@ -6,20 +6,46 @@
     android:layout_height="match_parent"
     tools:context="com.pillbox.ChangeAccount">
 
+    <Spinner
+        android:id="@+id/spinner_nav"
+        android:layout_width="170dp"
+        android:layout_height="123dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="247dp"
+        android:layout_marginTop="126dp"
+        app:layout_constraintBottom_toTopOf="@+id/changeAccountButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.731" />
 
     <Button
         android:id="@+id/changeAccountButton"
         android:layout_width="123dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
+        android:layout_height="55dp"
+        android:layout_marginBottom="60dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Change Account"
+        android:text="Return"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="0.91" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="136dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="275dp"
+        android:layout_marginTop="148dp"
+        android:text="    Change User"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/changeAccountButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
