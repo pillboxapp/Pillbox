@@ -118,11 +118,11 @@ class PillboxDB {
         insertStatuses();
     }
 
-    static void insertMedication(String medicationName, String description, Blob picture) {
+    static void insertMedication(String medicationName, String description, byte[] picture) {
         ContentValues cv = new ContentValues();
         cv.put("Name", medicationName);
         cv.put("Description", description);
-
+        cv.put("Picture", picture);
         sqliteDB.insertOrThrow("Medication", null, cv);
     }
 
@@ -236,7 +236,7 @@ class PillboxDB {
         String dateString = Globals.formatDate("YYYY-MM-dd", currentDate);
 
         // Get all headers for the current day
-        Cursor cursor = runFormattedQuery("SELECT H.ID HeaderID, M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName " +
+        Cursor cursor = runFormattedQuery("SELECT H.ID HeaderID, M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName , M.Picture " +
                 "FROM Header H " +
                 "INNER JOIN Medication M On M.ID = H.Medication_ID " +
                 "INNER JOIN Status S On S.ID = H.Status_ID " +
@@ -253,8 +253,9 @@ class PillboxDB {
                 double dosage = getCursorDouble(cursor, "Dosage");
                 String date = getCursorString(cursor, "Date");
                 Globals.Status status = getCursorEnum(cursor, "StatusName", Globals.Status.class);
+                byte[] blob = getCursorBlob(cursor, "Picture");
 
-                headers.add(new DailyViewRow(rowID, pillName, pillDesc, dosage, date, status));
+                headers.add(new DailyViewRow(rowID, pillName, pillDesc, dosage, date, status, blob));
             }
             cursor.close();
         }
@@ -410,6 +411,10 @@ class PillboxDB {
 
     private static String getCursorString(Cursor cursor, String colName) {
         return cursor.getString(cursor.getColumnIndex(colName));
+    }
+
+    private static byte[] getCursorBlob(Cursor cursor, String colName) {
+        return cursor.getBlob(cursor.getColumnIndex(colName));
     }
 
     private static int getCursorInt(Cursor cursor, String colName) {

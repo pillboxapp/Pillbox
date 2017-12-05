@@ -1,7 +1,10 @@
 package com.pillbox;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import java.io.ByteArrayInputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -133,5 +136,11 @@ class Globals {
 
     static void updateStatusImage(ImageView icon, Globals.Status status) {
         icon.setImageResource(getStatusImageResource(status));
+    }
+
+    static void updatePillPic(ImageView icon, byte[] pillPic){
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(pillPic);
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        icon.setImageBitmap(bitmap);
     }
 }

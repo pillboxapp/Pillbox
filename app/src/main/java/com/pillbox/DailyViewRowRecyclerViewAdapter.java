@@ -40,7 +40,9 @@ public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyV
         holder.mPillNameView.setText(mValues.get(position).pillName);
         holder.mDateView.setText(mValues.get(position).displayTime);
 
+
         Globals.updateStatusImage(holder.mStatusView, mValues.get(position).getStatus());
+        Globals.updatePillPic(holder.mPillPic, mValues.get(position).pillPic);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +66,7 @@ public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyV
         final TextView mPillNameView;
         final TextView mDateView;
         final ImageView mStatusView;
+        final ImageView mPillPic;
         DailyViewRow mItem;
 
         ViewHolder(View view) {
@@ -72,6 +75,7 @@ public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyV
             mPillNameView = view.findViewById(R.id.pill_name);
             mDateView = view.findViewById(R.id.date);
             mStatusView = view.findViewById(R.id.status_icon);
+            mPillPic = view.findViewById(R.id.pill_pic);
         }
     }
 }
