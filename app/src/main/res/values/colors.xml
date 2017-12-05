@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#FF2E1C</color>
+    <color name="colorPrimaryDark">#AA2E1C</color>
+    <color name="colorAccent">#FFFFFF</color>
+
+    <color name="skipPill">#F44641</color>
+    <color name="remindMe">#0BA9F4</color>
+    <color name="takePill">#A9CE2F</color>
+    <color name="addPill">#843178</color>
 </resources>

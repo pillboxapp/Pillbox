@@ -39,13 +39,13 @@ class DailyViewContent {
         // Reload data
         Items.clear();
         Items.addAll(returnedItems);
-        
+
         // Sort items from earliest to latest
         Collections.sort(Items);
     }
 
     // Represents one row on the grid
-    static class DailyViewRow implements Comparable<DailyViewRow>{
+    static class DailyViewRow implements Comparable<DailyViewRow> {
         final int rowID;
         final String pillName;
         final String pillDesc;

@@ -18,12 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/text_margin"
+        android:layout_marginBottom="5dp"
         android:layout_weight="1"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1.5"
+        android:layout_marginBottom="20dp">
         <RelativeLayout
             android:id="@+id/description_side_effects"
             android:layout_height="match_parent"
@@ -37,12 +39,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:textStyle="bold"
                 android:text="@string/side_effects"/>
             <TextView
                 android:id="@+id/detailed_view_pill_description"
                 android:layout_marginStart="@dimen/description_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#888888"
                 android:layout_below="@id/side_effects" />
         </RelativeLayout>
         <TextView
@@ -64,18 +68,26 @@
             android:layout_height="@dimen/button_height"
             android:text="@string/skip_pill_button_title"
             android:onClick="skipPill"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:textColor="@color/colorAccent"
+            android:background="@drawable/skip_pill_background"
             android:layout_alignParentStart="true" />
         <Button
             android:id="@+id/remind_me"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
             android:text="@string/remind_me_button_title"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:textColor="@color/colorAccent"
+            android:background="@drawable/remind_me_background"
             android:layout_toEndOf="@+id/skip_pill" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
             android:text="@string/take_pill_button_title"
             android:onClick="takePill"
+            android:textColor="@color/colorAccent"
+            android:background="@drawable/take_pill_background"
             android:layout_toEndOf="@+id/remind_me" />
 
     </RelativeLayout>
