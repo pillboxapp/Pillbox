@@ -13,37 +13,23 @@
         android:layout_gravity="center"
         android:layout_marginBottom="247dp"
         android:layout_marginTop="126dp"
-        app:layout_constraintBottom_toTopOf="@+id/changeAccountButton"
+        app:layout_constraintBottom_toTopOf="@+id/deleteAccountButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.692" />
 
     <Button
-        android:id="@+id/changeAccountButton"
+        android:id="@+id/deleteAccountButton"
         android:layout_width="123dp"
         android:layout_height="52dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="64dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="Return"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.914"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/addAccountButton"
-        android:layout_width="123dp"
-        android:layout_height="52dp"
-        android:layout_marginBottom="60dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:onClick="goToAddAccountActivity"
-        android:text="Add New Account"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -52,10 +38,10 @@
         android:layout_height="28dp"
         android:layout_marginBottom="275dp"
         android:layout_marginTop="148dp"
-        android:text="    Change User"
+        android:text="    Delete User"
         android:textSize="16dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/changeAccountButton"
+        app:layout_constraintBottom_toTopOf="@+id/deleteAccountButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

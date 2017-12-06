@@ -13,5 +13,9 @@
         android:id="@+id/ChangeAccountitem"
         android:title="@string/change_account_button_title"
         android:onClick="goToChangeAccount"/>
+    <item
+        android:id="@+id/DeleteAccountitem"
+        android:title="Delete Account"
+        android:onClick="goToDeleteAccount"/>
 
 </menu>
