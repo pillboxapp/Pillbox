@@ -5,8 +5,12 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Debug;
 import android.text.TextUtils;
+import android.util.DebugUtils;
+import android.util.Log;
 
+import java.io.Console;
 import java.sql.Blob;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -29,12 +33,17 @@ class PillboxDB {
      * and the app should use that instance for its entire lifecycle.
      */
     private static SQLiteDatabase sqliteDB;
+    private static MainActivity context;
     private static final int WEEKS_TO_ADD = 4;
 
     private PillboxDB() { }
 
     static void setDB(SQLiteDatabase newSqliteDB) {
         sqliteDB = newSqliteDB;
+    }
+
+    static void setContext(MainActivity activity) {
+        context = activity;
     }
 
     static void close() {
@@ -127,29 +136,31 @@ class PillboxDB {
     }
 
     static void insertMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
-        int medID = getID("Medication", medicationName);
+        int medicationID = getID("Medication", medicationName);
 
         ContentValues cv = new ContentValues();
         cv.put("User_ID", Globals.userID);
-        cv.put("Medication_ID", medID);
+        cv.put("Medication_ID", medicationID);
         cv.put("Dosage", dosage);
         cv.put("Day_Of_Week", dayOfWeek.toString());
         cv.put("Time", time);
         sqliteDB.insertOrThrow("MedicationSchedule", null, cv);
 
-        insertHeadersForMedication(medID, dosage, dayOfWeek, time);
+        insertHeadersForMedication(medicationID, medicationName, dosage, dayOfWeek, time);
     }
 
     static void addMissingHeaders() {
-        Cursor cursor = runFormattedQuery("Select User_ID, Medication_ID, Dosage, Day_Of_Week, Time From MedicationSchedule");
+        Cursor cursor = runFormattedQuery("Select MS.User_ID, M.Name MedicationName, MS.Medication_ID, MS.Dosage, MS.Day_Of_Week, MS.Time From MedicationSchedule MS " +
+                "Inner Join Medication M On M.ID = MS.Medication_ID");
         while (cursor.moveToNext()) {
             int userID = getCursorInt(cursor, "User_ID");
-            int medID = getCursorInt(cursor, "Medication_ID");
+            int medicationID = getCursorInt(cursor, "Medication_ID");
+            String medicationName = getCursorString(cursor, "MedicationName");
             int dosage = getCursorInt(cursor, "Dosage");
             Globals.DayOfWeek day =  getCursorEnum(cursor, "Day_Of_Week", Globals.DayOfWeek.class);
             String time = getCursorString(cursor, "Time");
 
-            insertHeadersForMedication(userID, medID, dosage, day, time);
+            insertHeadersForMedication(userID, medicationID, medicationName, dosage, day, time);
         }
     }
 
@@ -166,25 +177,30 @@ class PillboxDB {
         insertMedicationSchedule(medicationName, dosage, dayOfWeek, time);
     }
 
-    private static void insertHeadersForMedication(int medicationID, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
-        insertHeadersForMedication(Globals.userID, medicationID, dosage, dayOfWeek, time);
+    private static void insertHeadersForMedication(int medicationID, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+        insertHeadersForMedication(Globals.userID, medicationID, medicationName, dosage, dayOfWeek, time);
     }
 
-    private static void insertHeadersForMedication(int userID, int medicationID, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+    private static void insertHeadersForMedication(int userID, int medicationID, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
         int statusID = getID("Status", Globals.Status.UPCOMING.toString());
 
         for (int i = 0; i < WEEKS_TO_ADD; i++) {
-            String pillTime = Globals.nextDateTime(i, dayOfWeek, time);
+            Calendar pillDateTime = Globals.nextDateTime(i, dayOfWeek, time);
             // Don't add an entry for the current day if the time has already passed
-            if (pillTime != null) {
+            if (pillDateTime != null) {
+                String pillDateTimeString = Globals.formatDate("yyyy-MM-dd HH:mm", pillDateTime);
+
                 ContentValues cv = new ContentValues();
                 cv.put("User_ID", userID);
                 cv.put("Medication_ID", medicationID);
                 cv.put("Status_ID", statusID);
                 cv.put("Dosage", dosage);
-                cv.put("Date", pillTime);
+                cv.put("Date", pillDateTimeString);
                 try {
                     sqliteDB.insertOrThrow("Header", null, cv);
+
+                    String pillTime = Globals.reformatDate("yyyy-MM-dd HH:mm", "hh:mm a", pillDateTimeString);
+                    Globals.createAlarm(context, pillDateTime.getTimeInMillis(), medicationName, pillTime);
                 }
                 catch (SQLiteConstraintException ex) {
                     // Already added, don't need to do anything

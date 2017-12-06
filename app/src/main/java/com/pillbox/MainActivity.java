@@ -1,5 +1,9 @@
 package com.pillbox;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -37,9 +41,14 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         // Show the current date on the screen to start
         this.setDate(Globals.getCurrentDate());
 
+        PillboxDB.setContext(this);
+
         if (!initialized) {
             Globals.userID = 1;
             SQLiteDatabase sqliteDB;
+
+            Globals.notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            Globals.alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
             try {
                 // TODO: Remove the following statement when done changing the database
                 //this.deleteDatabase(getResources().getString(R.string.db_name));

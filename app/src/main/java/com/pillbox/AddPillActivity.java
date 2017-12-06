@@ -72,7 +72,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         mTimePicker = new TimePickerDialog(AddPillActivity.this, AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                editTime.setText(selectedHour + ":" + selectedMinute);
+                editTime.setText(String.format("%02d", selectedHour) + ":" + String.format("%02d", selectedMinute));
             }
         }, hour, minute, false);
         mTimePicker.setTitle("Select Time");
