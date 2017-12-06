@@ -64,13 +64,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="goToEditPill"
-        android:text="Edit" />
+        android:background="@drawable/edit_pill_background"
+        android:textColor="@color/colorAccent"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:text="Edit Current Pill" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="deletePill"
-        android:text="Delete" />
+        android:background="@drawable/delete_pill_background"
+        android:textColor="@color/colorAccent"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:text="Delete Current Pill" />
 
     <fragment class="com.pillbox.DetailedViewFragment"
         android:layout_width="match_parent"
