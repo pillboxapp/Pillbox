@@ -34,7 +34,7 @@ class PillboxDB {
      */
     private static SQLiteDatabase sqliteDB;
     private static MainActivity context;
-    private static final int WEEKS_TO_ADD = 1;
+    private static final int WEEKS_TO_ADD = 4;
 
     private PillboxDB() { }
 
@@ -110,7 +110,9 @@ class PillboxDB {
                 "Medication_ID INTEGER",
                 "Dosage REAL",
                 "Date DATETIME",
-                "Status_ID INTEGER"
+                "Status_ID INTEGER",
+                "Alarm_Code INTEGER",
+                "Alarm_Time INTEGER"
             },
             new String[] {
                 "User",
@@ -150,7 +152,8 @@ class PillboxDB {
     }
 
     static void addMissingHeaders() {
-        Cursor cursor = runFormattedQuery("Select MS.User_ID, M.Name MedicationName, MS.Medication_ID, MS.Dosage, MS.Day_Of_Week, MS.Time From MedicationSchedule MS " +
+        Cursor cursor = runFormattedQuery("Select MS.User_ID, M.Name MedicationName, MS.Medication_ID, MS.Dosage, MS.Day_Of_Week, MS.Time " +
+                "From MedicationSchedule MS " +
                 "Inner Join Medication M On M.ID = MS.Medication_ID");
         while (cursor.moveToNext()) {
             int userID = getCursorInt(cursor, "User_ID");
@@ -166,6 +169,11 @@ class PillboxDB {
 
     static void deleteMedicationSchedule(String medicationName) {
         String medID = getStringID("Medication", medicationName);
+        Cursor cursor = runFormattedQuery("Select Alarm_Code From Header Where Medication_ID = {0}", medID);
+        while (cursor.moveToNext()) {
+            int alarmCode = getCursorInt(cursor, "Alarm_Code");
+            Globals.deleteAlarm(context, alarmCode);
+        }
         String[] params = { Integer.toString(Globals.userID), medID };
         sqliteDB.delete("MedicationSchedule", "User_ID = ? and Medication_ID = ?", params);
         // Delete all headers in the future
@@ -189,18 +197,21 @@ class PillboxDB {
             // Don't add an entry for the current day if the time has already passed
             if (pillDateTime != null) {
                 String pillDateTimeString = Globals.formatDate("yyyy-MM-dd HH:mm", pillDateTime);
-
+                long pillMilliTime = pillDateTime.getTimeInMillis();
+                int alarmCode = (int)Globals.getTimestamp();
                 ContentValues cv = new ContentValues();
                 cv.put("User_ID", userID);
                 cv.put("Medication_ID", medicationID);
                 cv.put("Status_ID", statusID);
                 cv.put("Dosage", dosage);
                 cv.put("Date", pillDateTimeString);
+                cv.put("Alarm_Code", alarmCode);
+                cv.put("Alarm_Time", pillMilliTime);
                 try {
                     sqliteDB.insertOrThrow("Header", null, cv);
 
                     String pillTime = Globals.reformatDate("yyyy-MM-dd HH:mm", "hh:mm a", pillDateTimeString);
-                    Globals.createAlarm(context, pillDateTime.getTimeInMillis(), medicationName, pillTime);
+                    Globals.createAlarm(context, pillMilliTime, medicationName, pillTime, alarmCode);
                 }
                 catch (SQLiteConstraintException ex) {
                     // Already added, don't need to do anything
@@ -252,7 +263,8 @@ class PillboxDB {
         String dateString = Globals.formatDate("YYYY-MM-dd", currentDate);
 
         // Get all headers for the current day
-        Cursor cursor = runFormattedQuery("SELECT H.ID HeaderID, M.Name MedName, M.Description, H.Date, H.Dosage, S.Name StatusName , M.Picture " +
+        Cursor cursor = runFormattedQuery("SELECT H.ID HeaderID, M.Name MedName, M.Description, H.Date, H.Dosage, " +
+                "S.Name StatusName, M.Picture, H.Alarm_Code " +
                 "FROM Header H " +
                 "INNER JOIN Medication M On M.ID = H.Medication_ID " +
                 "INNER JOIN Status S On S.ID = H.Status_ID " +
@@ -270,8 +282,9 @@ class PillboxDB {
                 String date = getCursorString(cursor, "Date");
                 Globals.Status status = getCursorEnum(cursor, "StatusName", Globals.Status.class);
                 byte[] blob = getCursorBlob(cursor, "Picture");
+                int alarmCode = getCursorInt(cursor, "Alarm_Code");
 
-                headers.add(new DailyViewRow(rowID, pillName, pillDesc, dosage, date, status, blob));
+                headers.add(new DailyViewRow(rowID, pillName, pillDesc, dosage, date, status, blob, alarmCode));
             }
             cursor.close();
         }
