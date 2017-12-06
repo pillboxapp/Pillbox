@@ -154,13 +154,19 @@ class Globals {
         return System.currentTimeMillis();
     }
 
-    static void createAlarm(MainActivity context, long triggerTime, String pillName, String pillTime) {
+    static void createAlarm(MainActivity context, long triggerTime, String pillName, String pillTime, int alarmCode) {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("PillName", pillName);
         intent.putExtra("PillTime", pillTime);
-        int id = (int)getTimestamp();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime , pendingIntent);
+    }
+
+    static void deleteAlarm(MainActivity context, int alarmCode) {
+        Intent intent = new Intent(context, AlarmReceiver.class);    //OneShotAlarm is the broadcast receiver you use for alarm
+        PendingIntent sender = PendingIntent.getBroadcast(context, alarmCode, intent, 0);
+        alarmManager.cancel(sender);
     }
 
     static void updatePillPic(ImageView icon, byte[] pillPic){
