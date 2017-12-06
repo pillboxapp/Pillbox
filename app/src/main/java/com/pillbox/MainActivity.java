@@ -30,6 +30,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
+import static com.pillbox.PillboxDB.deleteMedicationSchedule;
+
 public class MainActivity extends AppCompatActivity implements DailyViewFragment.OnListFragmentInteractionListener,
         DailyViewFragment.OnUserControlsLoadedListener {
     private Date currentDate;
@@ -243,6 +245,29 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     public void takePill(View view) {
         this.updatePillStatus(Globals.Status.TAKEN, this.selectedRow);
     }
+
+    public void goToEditPill(View view) {
+        Intent myIntent = new Intent(MainActivity.this, AddPillActivity.class);
+        myIntent.putExtra("name", selectedRow.mPillNameView.getText().toString());
+        myIntent.putExtra("edit", "yes");
+        myIntent.putExtra("dosage", selectedRow.mItem.dosage);
+        myIntent.putExtra("desc", selectedRow.mItem.pillDesc);
+        myIntent.putExtra("date", selectedRow.mItem.date);
+        myIntent.putExtra("time", selectedRow.mItem.displayTime);
+        MainActivity.this.startActivity(myIntent);
+        DailyViewFragment dailyView = this.getDailyViewFragment();
+        dailyView.reloadData();
+        this.resetDetailedView();
+
+    }
+
+    public void deletePill(View view) {
+        deleteMedicationSchedule(selectedRow.mPillNameView.getText().toString());
+        DailyViewFragment dailyView = this.getDailyViewFragment();
+        dailyView.reloadData();
+        this.resetDetailedView();
+    }
+
 
     public void markPillAsReady(ViewHolder selectedRow) {
         this.updatePillStatus(Globals.Status.TIME_TO_TAKE, selectedRow);

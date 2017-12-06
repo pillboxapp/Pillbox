@@ -223,7 +223,6 @@ class PillboxDB {
     private static void insertStatus(Globals.Status status) {
         ContentValues cv = new ContentValues();
         cv.put("Name", status.toString());
-
         sqliteDB.insertOrThrow("Status", null, cv);
     }
 

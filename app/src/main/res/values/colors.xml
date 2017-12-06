@@ -9,6 +9,9 @@
     <color name="takePill">#A9CE2F</color>
     <color name="addPill">#2d337a</color>
 
+    <color name="deletePill">#F44641</color>
+    <color name="editPill">#F44641</color>
+
     <color name="skippedIndicator">#FF0000</color>
     <color name="timeToTakeIndicator">#DDDD00</color>
     <color name="takenIndicator">#00FF00</color>

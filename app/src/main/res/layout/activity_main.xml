@@ -60,6 +60,18 @@
         android:layout_marginRight="5dp"
         android:text="@string/add_pill_button_title" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="goToEditPill"
+        android:text="Edit" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="deletePill"
+        android:text="Delete" />
+
     <fragment class="com.pillbox.DetailedViewFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
