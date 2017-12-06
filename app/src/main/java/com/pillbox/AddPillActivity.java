@@ -25,14 +25,18 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 
 import static com.pillbox.PillboxDB.insertMedication;
 import static com.pillbox.PillboxDB.insertMedicationSchedule;
+import static com.pillbox.PillboxDB.updateMedicationSchedule;
 
 public class AddPillActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -54,11 +58,8 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         image_selected = false;
         pillText = (EditText)findViewById(R.id.pillText);
         descText = (EditText)findViewById(R.id.descText);
-      // dateText = (EditText)findViewById(R.id.dateText);
-       editTime = (EditText)findViewById(R.id.editTime);
-        //editTime.setShowSoftInputOnFocus(false);
+        editTime = (EditText)findViewById(R.id.editTime);
         dosageText = (EditText)findViewById(R.id.dosageText);
-        //editTime = (Button)findViewById(R.id.editTime);
         createButton = (Button)findViewById(R.id.createButton);
         sundayCheckBox = (CheckBox)findViewById(R.id.sundayBox);
         mondayCheckBox = (CheckBox)findViewById(R.id.mondayBox);
@@ -70,8 +71,13 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         everydayCheckBox = (CheckBox)findViewById(R.id.everyOtherBox);
         imageButton = (ImageButton) findViewById(R.id.imgButton);
         createButton.setOnClickListener(this);
-      //  db=openOrCreateDatabase("PillboxDB", Context.MODE_PRIVATE, null);
-        //db.execSQL("CREATE TABLE IF NOT EXISTS pill();");
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            pillText.setText(extras.getString("name") , TextView.BufferType.EDITABLE);
+            descText.setText(extras.getString("desc"), TextView.BufferType.EDITABLE);
+            dosageText.setText(String.valueOf(extras.getDouble("dosage")), TextView.BufferType.EDITABLE);
+            editTime.setText(extras.getString("time"), TextView.BufferType.EDITABLE);
+        }
 
 
     }
@@ -106,6 +112,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void onClick(View view)
     {
+        Bundle extras = getIntent().getExtras();
         if(view.getId() == R.id.imgButton){
             cameraClick(view);
 
@@ -125,7 +132,9 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
                 imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 byte[] bArray = bos.toByteArray();
 
+
                 PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), bArray);
+
             }
             catch (SQLiteConstraintException ex) {
                 // TODO: Medication exists already, show error to user
@@ -222,7 +231,13 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void createMedicationForDay(Globals.DayOfWeek day) {
-        insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
+        Bundle extras = getIntent().getExtras();
+        if (extras.getString("edit").equals("yes")) {
+            updateMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
+        } else {
+            insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
+
+        }
     }
 
 }
