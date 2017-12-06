@@ -410,6 +410,10 @@ class PillboxDB {
         return id;
     }
 
+    static void deleteUser(int id){
+        sqliteDB.execSQL("Delete From User Where ID = " + id);
+    }
+
     private static void execFormattedSql(String query, Object... formatArgs) {
         sqliteDB.beginTransaction();
         try {

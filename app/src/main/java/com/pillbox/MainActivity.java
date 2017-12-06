@@ -75,6 +75,14 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             } catch (SQLiteException ex) {
                 Log.e(getClass().getSimpleName(), "Could not create or open the database");
             }
+            if (PillboxDB.getUsers().isEmpty()){
+                Intent myIntent = new Intent(MainActivity.this, AddAccount.class);
+                MainActivity.this.startActivityForResult(myIntent, 1);
+            }
+            else{
+                Intent myIntent = new Intent(MainActivity.this, ChangeAccount.class);
+                MainActivity.this.startActivityForResult(myIntent, 1);
+            }
         }
     }
 
@@ -185,6 +193,11 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
     public void goToChangeAccount(MenuItem item) {
         Intent myIntent = new Intent(MainActivity.this, ChangeAccount.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
+    public void goToDeleteAccount(MenuItem item) {
+        Intent myIntent = new Intent(MainActivity.this, DeleteAccount.class);
         MainActivity.this.startActivity(myIntent);
     }
 

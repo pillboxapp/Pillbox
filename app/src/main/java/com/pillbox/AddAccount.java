@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import java.util.Calendar;
 
+import static com.pillbox.PillboxDB.getUserID;
 import static com.pillbox.PillboxDB.insertUser;
 import static com.pillbox.PillboxDB.insertMedicationSchedule;
 
@@ -52,6 +53,7 @@ public class AddAccount extends AppCompatActivity implements View.OnClickListene
     public void onClick(View view)
     {
         insertUser(nameText.getText().toString());
+        Globals.userID = getUserID(nameText.getText().toString());
         goToMainActivity();
         return;
     }

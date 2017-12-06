@@ -24,38 +24,32 @@ import java.util.List;
 
 import static com.pillbox.PillboxDB.getUserID;
 
-public class ChangeAccount extends AppCompatActivity implements View.OnClickListener{
+public class DeleteAccount extends AppCompatActivity implements View.OnClickListener{
 
-    Button changeAccountButton, addAccountButton;
+    Button deleteAccountButton;
     Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_account);
+        setContentView(R.layout.activity_delete_account);
 
-        addAccountButton = (Button)findViewById(R.id.addAccountButton);
-        changeAccountButton = (Button)findViewById(R.id.changeAccountButton);
-        changeAccountButton.setOnClickListener(this);
+        deleteAccountButton = (Button)findViewById(R.id.deleteAccountButton);
+        deleteAccountButton.setOnClickListener(this);
         spinner = (Spinner) findViewById(R.id.spinner_nav);
         addItemsToSpinner();
 
     }
 
     public void goToMainActivity() {
-        Intent myIntent = new Intent(ChangeAccount.this, MainActivity.class);
-        ChangeAccount.this.startActivity(myIntent);
-    }
-
-    public void goToAddAccountActivity(View view){
-        Intent myIntent = new Intent(ChangeAccount.this, AddAccount.class);
-        ChangeAccount.this.startActivity(myIntent);
+        Intent myIntent = new Intent(DeleteAccount.this, MainActivity.class);
+        DeleteAccount.this.startActivity(myIntent);
     }
 
     public void addItemsToSpinner(){
         final List<String> list = PillboxDB.getUsers();
-        list.add(0, "Change Account");
+        list.add(0, "Delete Account");
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -66,11 +60,12 @@ public class ChangeAccount extends AppCompatActivity implements View.OnClickList
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
-                if (text.equals("Change Account")){
+                if (text.equals("Delete Account")){
 
                 }
                 else{
-                    Globals.userID = getUserID(text);
+                    int userIDtemp = getUserID(text);
+                    PillboxDB.deleteUser(userIDtemp);
                     goToMainActivity();
                 }
             }

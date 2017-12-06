@@ -20,6 +20,7 @@
         <activity android:name=".AddPillActivity"></activity>
         <activity android:name=".AddAccount"></activity>
         <activity android:name=".ChangeAccount"></activity>
+        <activity android:name=".DeleteAccount"></activity>
         <activity android:name=".Settings"></activity>
 
         <receiver android:name=".AlarmReceiver">

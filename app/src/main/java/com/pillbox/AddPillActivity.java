@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.os.Build;
@@ -39,6 +40,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
     Button createButton;
     CheckBox sundayCheckBox, mondayCheckBox, tuesdayCheckBox, wednesdayCheckBox, thursdayCheckBox, fridayCheckBox, saturdayCheckBox, everydayCheckBox;
     ImageButton imageButton;
+    Boolean image_selected;
     private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     public AddPillActivity() {
@@ -49,7 +51,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         Intent intent = getIntent();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pill);
-
+        image_selected = false;
         pillText = (EditText)findViewById(R.id.pillText);
         descText = (EditText)findViewById(R.id.descText);
       // dateText = (EditText)findViewById(R.id.dateText);
@@ -109,10 +111,20 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
         }else{
             try {
+                Bitmap imageBitmap;
+
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                Bitmap imageBitmap = ((BitmapDrawable)imageButton.getDrawable()).getBitmap();
+
+                if(image_selected){
+                    imageBitmap = ((BitmapDrawable)imageButton.getDrawable()).getBitmap();
+                }
+                else{
+                    imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_placeholder);
+                }
+
                 imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 byte[] bArray = bos.toByteArray();
+
                 PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), bArray);
             }
             catch (SQLiteConstraintException ex) {
@@ -204,6 +216,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             imageButton.setImageBitmap(imageBitmap);
+            image_selected = true;
 
         }
     }

@@ -81,6 +81,11 @@ public class CalendarActivity extends AppCompatActivity {
         CalendarActivity.this.startActivity(myIntent);
     }
 
+    public void goToDeleteAccount(MenuItem item) {
+        Intent myIntent = new Intent(CalendarActivity.this, DeleteAccount.class);
+        CalendarActivity.this.startActivity(myIntent);
+    }
+
     public void addItemsToSpinner(){
         final List<String> list = PillboxDB.getMedications();
         list.add(0, "Overview");
