@@ -8,4 +8,6 @@
     <color name="remindMe">#0BA9F4</color>
     <color name="takePill">#A9CE2F</color>
     <color name="addPill">#2d337a</color>
+
+    <color name="dark_grey">#636363</color>
 </resources>
