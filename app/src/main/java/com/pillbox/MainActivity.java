@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -86,6 +88,10 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         DailyViewRow item = holder.mItem;
         String pillText = item.dosage > 1 ? "pills": "pill";
         String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.displayTime);
+        BitmapDrawable drawable = (BitmapDrawable) holder.mPillPic.getDrawable();
+        Bitmap bitmap = drawable.getBitmap();
+        ImageView imageView = findViewById(R.id.detailed_view_image);
+        imageView.setImageBitmap(bitmap);
         this.updateDetailedText(item.pillName, item.pillDesc, pillTime);
     }
 

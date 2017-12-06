@@ -1,5 +1,7 @@
 package com.pillbox;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.ImageView;
 
+import java.io.ByteArrayInputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -158,5 +161,11 @@ class Globals {
         int id = (int)getTimestamp();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+    }
+
+    static void updatePillPic(ImageView icon, byte[] pillPic){
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(pillPic);
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        icon.setImageBitmap(bitmap);
     }
 }

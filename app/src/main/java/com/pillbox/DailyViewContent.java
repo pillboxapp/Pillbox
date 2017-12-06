@@ -52,9 +52,10 @@ class DailyViewContent {
         final double dosage;
         final Date date;
         final String displayTime;
+        final byte[] pillPic;
         private Globals.Status statusName;
 
-        DailyViewRow(int rowID, String pillName, String pillDesc, double dosage, String date, Globals.Status statusName) {
+        DailyViewRow(int rowID, String pillName, String pillDesc, double dosage, String date, Globals.Status statusName, byte[] pillPic) {
             this.rowID = rowID;
             this.pillName = pillName;
             this.pillDesc = pillDesc;
@@ -62,6 +63,7 @@ class DailyViewContent {
             this.date = Globals.parseDate("yyyy-MM-dd HH:mm", date);
             this.displayTime = Globals.formatDate("hh:mm a", this.date);
             this.statusName = statusName;
+            this.pillPic = pillPic;
         }
 
         void updateStatus(Globals.Status newStatus) {
