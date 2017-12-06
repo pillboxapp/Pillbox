@@ -2,21 +2,21 @@ package com.pillbox;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,11 +24,17 @@ import com.pillbox.DailyViewContent.DailyViewRow;
 import com.pillbox.DailyViewRowRecyclerViewAdapter.ViewHolder;
 
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
 
-public class MainActivity extends AppCompatActivity implements DailyViewFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements DailyViewFragment.OnListFragmentInteractionListener,
+        DailyViewFragment.OnUserControlsLoadedListener {
     private Date currentDate;
     private ViewHolder selectedRow;
+    private RecyclerView recyclerView;
 
     private static boolean initialized = false;
 
@@ -70,6 +76,54 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
                 Log.e(getClass().getSimpleName(), "Could not create or open the database");
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.checkForReadyPills();
+    }
+
+    private void checkForReadyPills() {
+        final Runnable update = new Runnable() {
+            public void run() {
+                recyclerView.post(new Runnable() {
+                    public void run() {
+                        updateReadyPills();
+                    }
+                });
+            }
+        };
+
+        Timer timer = new Timer();
+
+        // Check pills every 10 seconds
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                update.run();
+            }
+        }, 5000, 10000);
+
+        update.run();
+    }
+
+    private void updateReadyPills() {
+        if (recyclerView == null) {
+            return;
+        }
+        int count = recyclerView.getAdapter().getItemCount();
+        for (int i = 0; i < count; i++) {
+            ViewHolder row = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+            if (row != null && row.mItem.date.compareTo(Globals.getCurrentDate()) <= 0 &&
+                    row.mItem.getStatus() == Globals.Status.UPCOMING) {
+                markPillAsReady(row);
+            }
+        }
+    }
+
+    public void onUserControlsLoaded(RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
     }
 
     public Date getCurrentDate() {
@@ -148,29 +202,37 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
     private void changeDate(Date date) {
         this.setDate(date);
-        DailyViewFragment dailyView = (DailyViewFragment)getSupportFragmentManager().findFragmentById(R.id.daily_view_fragment);
+        DailyViewFragment dailyView = this.getDailyViewFragment();
         dailyView.reloadData();
         this.resetDetailedView();
     }
 
-    private void updatePillStatus(Globals.Status newStatus) {
+    private DailyViewFragment getDailyViewFragment() {
+        return (DailyViewFragment)getSupportFragmentManager().findFragmentById(R.id.daily_view_fragment);
+    }
+
+    private void updatePillStatus(Globals.Status newStatus, ViewHolder row) {
         // Don't do anything if no pill is selected
-        if (selectedRow == null) {
+        if (row == null) {
             return;
         }
 
-        PillboxDB.updateStatus(this.selectedRow.mItem.rowID, newStatus);
-        this.selectedRow.mItem.updateStatus(newStatus);
+        PillboxDB.updateStatus(row.mItem.rowID, newStatus);
+        row.mItem.updateStatus(newStatus);
 
-        Globals.updateStatusImage(this.selectedRow.mStatusView, newStatus);
+        Globals.updateStatusImage(row.mStatusView, newStatus);
     }
 
     public void skipPill(View view) {
-        this.updatePillStatus(Globals.Status.SKIPPED);
+        this.updatePillStatus(Globals.Status.SKIPPED, this.selectedRow);
     }
 
     public void takePill(View view) {
-        this.updatePillStatus(Globals.Status.TAKEN);
+        this.updatePillStatus(Globals.Status.TAKEN, this.selectedRow);
+    }
+
+    public void markPillAsReady(ViewHolder selectedRow) {
+        this.updatePillStatus(Globals.Status.TIME_TO_TAKE, selectedRow);
     }
 
     private void setDate(Date newDate) {

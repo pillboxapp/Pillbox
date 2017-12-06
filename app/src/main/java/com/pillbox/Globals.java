@@ -160,7 +160,7 @@ class Globals {
         intent.putExtra("PillTime", pillTime);
         int id = (int)getTimestamp();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime , pendingIntent);
     }
 
     static void updatePillPic(ImageView icon, byte[] pillPic){

@@ -20,9 +20,9 @@ import java.util.List;
 public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyViewRowRecyclerViewAdapter.ViewHolder> {
 
     private final List<DailyViewRow> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final MainActivity mListener;
 
-    DailyViewRowRecyclerViewAdapter(List<DailyViewRow> items, OnListFragmentInteractionListener listener) {
+    DailyViewRowRecyclerViewAdapter(List<DailyViewRow> items, MainActivity listener) {
         mValues = items;
         mListener = listener;
     }
@@ -39,7 +39,6 @@ public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyV
         holder.mItem = mValues.get(position);
         holder.mPillNameView.setText(mValues.get(position).pillName);
         holder.mDateView.setText(mValues.get(position).displayTime);
-
 
         Globals.updateStatusImage(holder.mStatusView, mValues.get(position).getStatus());
         Globals.updatePillPic(holder.mPillPic, mValues.get(position).pillPic);

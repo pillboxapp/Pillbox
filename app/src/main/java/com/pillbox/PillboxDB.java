@@ -34,7 +34,7 @@ class PillboxDB {
      */
     private static SQLiteDatabase sqliteDB;
     private static MainActivity context;
-    private static final int WEEKS_TO_ADD = 4;
+    private static final int WEEKS_TO_ADD = 1;
 
     private PillboxDB() { }
 

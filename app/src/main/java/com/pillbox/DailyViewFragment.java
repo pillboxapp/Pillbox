@@ -26,7 +26,7 @@ public class DailyViewFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private MainActivity mListener;
     private DailyViewRowRecyclerViewAdapter mAdapter;
 
     /**
@@ -48,7 +48,6 @@ public class DailyViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -73,8 +72,9 @@ public class DailyViewFragment extends Fragment {
 
             mAdapter = new DailyViewRowRecyclerViewAdapter(DailyViewContent.Items, mListener);
             recyclerView.setAdapter(mAdapter);
-
+            mListener.onUserControlsLoaded(recyclerView);
         }
+
         return view;
     }
 
@@ -88,13 +88,18 @@ public class DailyViewFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof MainActivity) {
+            mListener = (MainActivity) context;
         }
         else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -111,6 +116,8 @@ public class DailyViewFragment extends Fragment {
         this.mAdapter.notifyDataSetChanged();
     }
 
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -123,5 +130,9 @@ public class DailyViewFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(DailyViewRowRecyclerViewAdapter.ViewHolder item);
+    }
+
+    public interface OnUserControlsLoadedListener {
+        void onUserControlsLoaded(RecyclerView recyclerView);
     }
 }
