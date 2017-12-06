@@ -21,10 +21,12 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -32,7 +34,9 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static com.pillbox.PillboxDB.insertMedication;
 import static com.pillbox.PillboxDB.insertMedicationSchedule;
@@ -69,6 +73,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         fridayCheckBox = (CheckBox)findViewById(R.id.fridayBox);
         saturdayCheckBox = (CheckBox)findViewById(R.id.saturdayBox);
         everydayCheckBox = (CheckBox)findViewById(R.id.everyOtherBox);
+
         imageButton = (ImageButton) findViewById(R.id.imgButton);
         createButton.setOnClickListener(this);
         Bundle extras = getIntent().getExtras();
@@ -81,6 +86,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
 
     }
+
 
     public void goToMainActivity() {
         Intent myIntent = new Intent(AddPillActivity.this, MainActivity.class);
@@ -103,15 +109,36 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         mTimePicker.show();
     }
 
-    public void deleteClick(View view)
+    public void everyCheck(View view)
     {
-        goToMainActivity();
+        if(everydayCheckBox.isChecked())
+        {
+            sundayCheckBox.setChecked(true);
+            mondayCheckBox.setChecked(true);
+            tuesdayCheckBox.setChecked(true);
+            wednesdayCheckBox.setChecked(true);
+            thursdayCheckBox.setChecked(true);
+            fridayCheckBox.setChecked(true);
+            saturdayCheckBox.setChecked(true);
+        }
+        else if(everydayCheckBox.isChecked() == false)
+        {
+            sundayCheckBox.setChecked(false);
+            mondayCheckBox.setChecked(false);
+            tuesdayCheckBox.setChecked(false);
+            wednesdayCheckBox.setChecked(false);
+            thursdayCheckBox.setChecked(false);
+            fridayCheckBox.setChecked(false);
+            saturdayCheckBox.setChecked(false);
+        }
     }
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void onClick(View view)
     {
+
         Bundle extras = getIntent().getExtras();
         if(view.getId() == R.id.imgButton){
             cameraClick(view);
@@ -232,11 +259,12 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
     private void createMedicationForDay(Globals.DayOfWeek day) {
         Bundle extras = getIntent().getExtras();
-        if (extras.getString("edit").equals("yes")) {
-            updateMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
-        } else {
+        if(extras == null)
+        {
             insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
-
+        }
+        else if (extras.getString("edit").equals("yes")) {
+            updateMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
         }
     }
 
