@@ -8,16 +8,18 @@
 
     <Spinner
         android:id="@+id/spinner_nav"
-        android:layout_width="170dp"
-        android:layout_height="123dp"
+        android:layout_width="191dp"
+        android:layout_height="43dp"
         android:layout_gravity="center"
         android:layout_marginBottom="247dp"
         android:layout_marginTop="126dp"
+        android:background="@drawable/account_background"
         app:layout_constraintBottom_toTopOf="@+id/changeAccountButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.692" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/changeAccountButton"
@@ -52,7 +54,7 @@
         android:layout_height="28dp"
         android:layout_marginBottom="275dp"
         android:layout_marginTop="148dp"
-        android:text="    Change User"
+        android:text=""
         android:textSize="16dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/changeAccountButton"
@@ -60,5 +62,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread" />
+
 
 </android.support.constraint.ConstraintLayout>

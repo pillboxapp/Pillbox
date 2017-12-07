@@ -113,6 +113,7 @@ public class DailyViewFragment extends Fragment {
         Date currentDate = ((MainActivity)getActivity()).getCurrentDate();
 
         DailyViewContent.loadItems(currentDate);
+
         this.mAdapter.notifyDataSetChanged();
     }
 

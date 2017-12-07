@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             return;
         }
         int count = recyclerView.getAdapter().getItemCount();
+
         for (int i = 0; i < count; i++) {
             ViewHolder row = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
             if (row != null && row.mItem.getDate().compareTo(Globals.getCurrentDate()) <= 0 &&
@@ -224,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         this.setDate(date);
         DailyViewFragment dailyView = this.getDailyViewFragment();
         dailyView.reloadData();
+        this.setRecyclerViewVisibility();
         this.resetDetailedView();
     }
 
@@ -317,7 +319,11 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
 
     public void goToEditPill(View view) {
-        if (selectedRow == null || toastIfPillInPast("Cannot edit records in the past")) {
+        if (selectedRow == null) {
+            Toast.makeText(this, "Must select pill first.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (toastIfPillInPast("Cannot edit records in the past")) {
             return;
         }
 
@@ -333,10 +339,15 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         DailyViewFragment dailyView = this.getDailyViewFragment();
         dailyView.reloadData();
         this.resetDetailedView();
+
     }
 
     public void deletePill(View view) {
-        if (selectedRow == null || toastIfPillInPast("Cannot delete records in the past")) {
+        if (selectedRow == null) {
+            Toast.makeText(this, "Must select pill before it can be deleted.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (toastIfPillInPast("Cannot delete records in the past")) {
             return;
         }
         deleteMedicationSchedule(selectedRow.mPillNameView.getText().toString(), getApplicationContext());
@@ -381,6 +392,17 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
                 changeDate(date);
 
             }
+        }
+    }
+
+    public void setRecyclerViewVisibility(){
+        TextView textview = findViewById(R.id.recycler_empty_view);
+        if(recyclerView.getAdapter().getItemCount() == 0){
+            this.recyclerView.setVisibility(View.GONE);
+            textview.setVisibility(View.VISIBLE);
+        }else{
+            this.recyclerView.setVisibility(View.VISIBLE);
+            textview.setVisibility(View.GONE);
         }
     }
 }
