@@ -69,7 +69,7 @@
         android:onClick="onClick"
         android:background="@drawable/confirm_pill_background"
         android:textColor="@color/colorAccent"
-        android:text="Create Pill"
+        android:text="@string/create_pill_button_title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

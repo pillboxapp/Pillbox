@@ -67,13 +67,21 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         dosageText = (EditText)findViewById(R.id.dosageText);
         createButton = (Button)findViewById(R.id.createButton);
         sundayCheckBox = (ToggleButton)findViewById(R.id.sundayBox);
+        sundayCheckBox.setChecked(true);
         mondayCheckBox = (ToggleButton)findViewById(R.id.mondayBox);
+        mondayCheckBox.setChecked(true);
         tuesdayCheckBox = (ToggleButton)findViewById(R.id.tuesdayBox);
+        tuesdayCheckBox.setChecked(true);
         wednesdayCheckBox = (ToggleButton)findViewById(R.id.wednesdayBox);
+        wednesdayCheckBox.setChecked(true);
         thursdayCheckBox = (ToggleButton)findViewById(R.id.thursdayBox);
+        thursdayCheckBox.setChecked(true);
         fridayCheckBox = (ToggleButton)findViewById(R.id.fridayBox);
+        fridayCheckBox.setChecked(true);
         saturdayCheckBox = (ToggleButton)findViewById(R.id.saturdayBox);
+        saturdayCheckBox.setChecked(true);
         everydayCheckBox = (ToggleButton)findViewById(R.id.everyOtherBox);
+        everydayCheckBox.setChecked(true);
 
         imageButton = (ImageButton) findViewById(R.id.imgButton);
         createButton.setOnClickListener(this);
@@ -83,6 +91,8 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
             descText.setText(extras.getString("desc"), TextView.BufferType.EDITABLE);
             dosageText.setText(String.valueOf(extras.getDouble("dosage")), TextView.BufferType.EDITABLE);
             editTime.setText(extras.getString("time"), TextView.BufferType.EDITABLE);
+
+            createButton.setText(R.string.update_pill_button_title);
         }
 
 

@@ -17,4 +17,6 @@
     <string name="change_account_button_title">Change Account</string>
     <string name="add_account_button_title">Add Account</string>
     <string name="add_pill_button_title">Add Pill</string>
+    <string name="create_pill_button_title">Create Pill</string>
+    <string name="update_pill_button_title">Update Pill</string>
 </resources>
