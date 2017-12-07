@@ -54,7 +54,9 @@
         android:layout_height="wrap_content"
         android:gravity="center|top"
         android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp">
         <Button
             android:id="@+id/delete_pill"
             android:layout_width="0dp"
@@ -97,8 +99,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="@android:color/darker_gray"
-        android:layout_marginTop="5dp"/>
+        android:background="@android:color/darker_gray"/>
 
     <fragment class="com.pillbox.DailyViewFragment"
         android:layout_width="match_parent"
