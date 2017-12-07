@@ -55,7 +55,7 @@ public class ChangeAccount extends AppCompatActivity implements View.OnClickList
 
     public void addItemsToSpinner(){
         final List<String> list = PillboxDB.getUsers();
-        list.add(0, " Change Account");
+        list.add(0, " Select Account");
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -64,7 +64,7 @@ public class ChangeAccount extends AppCompatActivity implements View.OnClickList
                 String text = list.get(position);
                 int duration = Toast.LENGTH_SHORT;
 
-                if (text.equals(" Change Account")){
+                if (text.equals(" Select Account")){
 
                 }
                 else{
