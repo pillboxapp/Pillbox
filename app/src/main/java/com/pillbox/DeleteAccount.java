@@ -49,7 +49,7 @@ public class DeleteAccount extends AppCompatActivity implements View.OnClickList
 
     public void addItemsToSpinner(){
         final List<String> list = PillboxDB.getUsers();
-        list.add(0, "Delete Account");
+        list.add(0, "  Delete Account");
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -60,7 +60,7 @@ public class DeleteAccount extends AppCompatActivity implements View.OnClickList
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
-                if (text.equals("Delete Account")){
+                if (text.equals("  Delete Account")){
 
                 }
                 else{

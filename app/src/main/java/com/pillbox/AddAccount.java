@@ -52,9 +52,11 @@ public class AddAccount extends AppCompatActivity implements View.OnClickListene
 
     public void onClick(View view)
     {
-        insertUser(nameText.getText().toString());
-        Globals.userID = getUserID(nameText.getText().toString());
-        goToMainActivity();
-        return;
+        if (nameText.getText().toString().length() > 1) {
+            insertUser(nameText.getText().toString());
+            Globals.userID = getUserID(nameText.getText().toString());
+            goToMainActivity();
+            return;
+        }
     }
 }

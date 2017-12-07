@@ -8,16 +8,17 @@
 
     <Spinner
         android:id="@+id/spinner_nav"
-        android:layout_width="170dp"
-        android:layout_height="123dp"
+        android:layout_width="198dp"
+        android:layout_height="38dp"
         android:layout_gravity="center"
         android:layout_marginBottom="247dp"
         android:layout_marginTop="126dp"
+        android:background="@drawable/account_background"
         app:layout_constraintBottom_toTopOf="@+id/deleteAccountButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.692" />
+        app:layout_constraintVertical_bias="0.333" />
 
     <Button
         android:id="@+id/deleteAccountButton"
@@ -35,16 +36,17 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="136dp"
-        android:layout_height="28dp"
+        android:layout_height="27dp"
         android:layout_marginBottom="275dp"
         android:layout_marginTop="148dp"
-        android:text="    Delete User"
+        android:text=""
         android:textSize="16dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/deleteAccountButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:layout_constraintVertical_chainStyle="spread" />
 
 </android.support.constraint.ConstraintLayout>
