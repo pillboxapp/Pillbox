@@ -146,20 +146,6 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
         }else{
             try {
-//                Bitmap imageBitmap;
-//
-//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//
-//                if(image_selected){
-//                    imageBitmap = ((BitmapDrawable)imageButton.getDrawable()).getBitmap();
-//                }
-//                else{
-//                    imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_placeholder);
-//                }
-//
-//                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-//                byte[] bArray = bos.toByteArray();
-
                 String pillName = pillText.getText().toString();
                 String description = descText.getText().toString();
                 // Add new pill
@@ -176,10 +162,6 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
                     else {
                         PillboxDB.updateMedication(previousName, pillName, description, null);
                     }
-
-//                    if (!previousName.equals(pillText.getText().toString())) {
-//                        PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), bArray);
-//                    }
                 }
 
             }

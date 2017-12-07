@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     public void onResume() {
         super.onResume();
         this.checkForReadyPills();
+        this.setRecyclerViewVisibility();
     }
 
     private void checkForReadyPills() {
@@ -397,6 +398,9 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
     public void setRecyclerViewVisibility(){
         TextView textview = findViewById(R.id.recycler_empty_view);
+        if (textview == null || recyclerView == null) {
+            return;
+        }
         if(recyclerView.getAdapter().getItemCount() == 0){
             this.recyclerView.setVisibility(View.GONE);
             textview.setVisibility(View.VISIBLE);

@@ -64,12 +64,12 @@ public class ChangeAccount extends AppCompatActivity implements View.OnClickList
                 String text = list.get(position);
                 int duration = Toast.LENGTH_SHORT;
 
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
                 if (text.equals(" Change Account")){
 
                 }
                 else{
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
                     Globals.userID = getUserID(text);
                     goToMainActivity();
                 }
