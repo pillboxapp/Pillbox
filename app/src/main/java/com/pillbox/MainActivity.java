@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
                 // Set the instance of sql to be used for the duration of the app's life
                 PillboxDB.setDB(sqliteDB);
                 PillboxDB.createTables();
-                // TODO: Remove the following statement when we insert real data
-                //PillboxDB.insertDummyData();
 
                 PillboxDB.addMissingHeaders(getApplicationContext());
 
@@ -156,24 +154,28 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         String pillText = item.dosage > 1 ? "pills": "pill";
         String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.getDisplayTime());
         BitmapDrawable drawable = (BitmapDrawable) holder.mPillPic.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
-        ImageView imageView = findViewById(R.id.detailed_view_image);
-        imageView.setImageBitmap(bitmap);
-        this.updateDetailedText(item.pillName, item.pillDesc, pillTime);
+        this.updateDetailedText(item.pillName, item.pillDesc, pillTime, drawable);
     }
 
-    private void updateDetailedText(String pillName, String pillDesc, String pillTime) {
+    private void updateDetailedText(String pillName, String pillDesc, String pillTime, BitmapDrawable drawable) {
         TextView description = findViewById(R.id.detailed_view_pill_description);
         TextView name = findViewById(R.id.detailed_view_pill_name);
         TextView time = findViewById(R.id.detailed_view_pill_time);
+        ImageView imageView = findViewById(R.id.detailed_view_image);
 
         name.setText(pillName);
         description.setText(pillDesc);
         time.setText(pillTime);
+        if (drawable != null) {
+            imageView.setImageBitmap(drawable.getBitmap());
+        }
+        else {
+            imageView.setImageBitmap(null);
+        }
     }
 
     private void resetDetailedView() {
-        this.updateDetailedText("", "", "");
+        this.updateDetailedText("", "", "", null);
     }
 
     public void goToCalendar(View view) {
@@ -301,11 +303,12 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         String pillName = selectedRow.mItem.pillName;
         String pillTime = selectedRow.mItem.getDisplayTime();
         String pillDesc = selectedRow.mItem.pillDesc;
+        BitmapDrawable drawable = (BitmapDrawable)selectedRow.mPillPic.getDrawable();
 
         Globals.updateAlarmTime(getApplicationContext(), newAlarmTime, pillName, pillTime, alarmCode);
 
         // Update UI
-        this.updateDetailedText(pillName, pillDesc, pillTime);
+        this.updateDetailedText(pillName, pillDesc, pillTime, drawable);
         this.markPillAsUpcoming();
 
         DailyViewFragment dailyViewFragment = this.getDailyViewFragment();

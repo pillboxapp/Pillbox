@@ -41,9 +41,6 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.List;
 
-import static com.pillbox.PillboxDB.insertMedication;
-import static com.pillbox.PillboxDB.insertMedicationSchedule;
-import static com.pillbox.PillboxDB.updateMedicationSchedule;
 
 public class AddPillActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -93,6 +90,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
     public void goToMainActivity() {
         Intent myIntent = new Intent(AddPillActivity.this, MainActivity.class);
         AddPillActivity.this.startActivity(myIntent);
+        finish();
     }
 
     public void timeClick(View view)
@@ -148,26 +146,45 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
         }else{
             try {
-                Bitmap imageBitmap;
+//                Bitmap imageBitmap;
+//
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//
+//                if(image_selected){
+//                    imageBitmap = ((BitmapDrawable)imageButton.getDrawable()).getBitmap();
+//                }
+//                else{
+//                    imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_placeholder);
+//                }
+//
+//                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+//                byte[] bArray = bos.toByteArray();
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-                if(image_selected){
-                    imageBitmap = ((BitmapDrawable)imageButton.getDrawable()).getBitmap();
+                String pillName = pillText.getText().toString();
+                String description = descText.getText().toString();
+                // Add new pill
+                if (extras == null || extras.getString("edit") == null) {
+                    PillboxDB.insertMedication(pillName, description, this.getImageArray());
                 }
-                else{
-                    imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_placeholder);
+                // Edit pill
+                else if (extras.getString("edit") != null && extras.getString("edit").equals("yes")) {
+                    String previousName = extras.getString("previousName");
+                    PillboxDB.deleteMedicationSchedule(previousName, getApplicationContext());
+                    if (image_selected) {
+                        PillboxDB.updateMedication(previousName, pillName, description, this.getImageArray());
+                    }
+                    else {
+                        PillboxDB.updateMedication(previousName, pillName, description, null);
+                    }
+
+//                    if (!previousName.equals(pillText.getText().toString())) {
+//                        PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), bArray);
+//                    }
                 }
-
-                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                byte[] bArray = bos.toByteArray();
-
-
-                PillboxDB.insertMedication(pillText.getText().toString(), descText.getText().toString(), bArray);
 
             }
             catch (SQLiteConstraintException ex) {
-                // TODO: Medication exists already, show error to user
+                Toast.makeText(this, "Pill name already exists", Toast.LENGTH_LONG).show();
             }
             if(everydayCheckBox.isChecked())
             {
@@ -204,6 +221,22 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private byte[] getImageArray() {
+        Bitmap imageBitmap;
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        if(image_selected){
+            imageBitmap = ((BitmapDrawable)imageButton.getDrawable()).getBitmap();
+        }
+        else{
+            imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_placeholder);
+        }
+
+        imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        return bos.toByteArray();
+    }
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -257,15 +290,17 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void createMedicationForDay(Globals.DayOfWeek day) {
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getString("edit").equals("yes")) {
-            updateMedicationSchedule(extras.getString("previousName"), pillText.getText().toString(),
-                    Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString(), getApplicationContext());
-        } else {
-            insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day,
-                    editTime.getText().toString(), getApplicationContext());
-
-        }
+        PillboxDB.insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day,
+                editTime.getText().toString(), getApplicationContext());
+//        Bundle extras = getIntent().getExtras();
+//        if (extras != null && extras.getString("edit").equals("yes")) {
+//            updateMedicationSchedule(extras.getString("previousName"), pillText.getText().toString(),
+//                    Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString(), getApplicationContext());
+//        } else {
+//            insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day,
+//                    editTime.getText().toString(), getApplicationContext());
+//
+//        }
     }
 
 }

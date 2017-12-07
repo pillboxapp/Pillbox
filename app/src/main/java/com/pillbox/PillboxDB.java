@@ -51,9 +51,12 @@ class PillboxDB {
                 "ID INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT",
                 "Name VARCHAR",
                 "Description VARCHAR",
-                "Picture BLOB"
+                "Picture BLOB",
+                "User_ID Integer"
             },
-            null,
+            new String[] {
+                "User"
+            },
             new String[] {
                 "Name"
             }
@@ -129,7 +132,20 @@ class PillboxDB {
         cv.put("Name", medicationName);
         cv.put("Description", description);
         cv.put("Picture", picture);
+        cv.put("User_ID", Globals.userID);
         sqliteDB.insertOrThrow("Medication", null, cv);
+    }
+
+    static void updateMedication(String oldName, String newName, String description, byte[] picture) {
+        ContentValues cv = new ContentValues();
+        cv.put("Name", newName);
+        cv.put("Description", description);
+        if (picture != null) {
+            cv.put("Picture", picture);
+        }
+
+        String[] args = { Integer.toString(Globals.userID), oldName };
+        sqliteDB.update("Medication", cv, "User_ID = ? and Name = ?", args);
     }
 
     static void insertMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time, Context context) {
@@ -177,17 +193,10 @@ class PillboxDB {
             Globals.deleteAlarm(context, alarmCode);
         }
         String[] params = { Integer.toString(Globals.userID), medID };
-        int test = sqliteDB.delete("MedicationSchedule", "User_ID = ? and Medication_ID = ?", params);
-        System.out.println(test);
+        sqliteDB.delete("MedicationSchedule", "User_ID = ? and Medication_ID = ?", params);
+
         // Delete all headers in the future
-        int test2 = sqliteDB.delete("Header", "User_ID = ? and Medication_ID = ? and Date >= datetime(CURRENT_TIMESTAMP, 'localtime')", params);
-        System.out.println(test2);
-    }
-
-
-    static void updateMedicationSchedule(String oldName, String newName, double dosage, Globals.DayOfWeek dayOfWeek, String time, Context context) {
-        deleteMedicationSchedule(oldName, context);
-        insertMedicationSchedule(newName, dosage, dayOfWeek, time, context);
+        sqliteDB.delete("Header", "User_ID = ? and Medication_ID = ? and Date >= datetime(CURRENT_TIMESTAMP, 'localtime')", params);
     }
 
     private static void insertHeadersForMedication(int medicationID, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek,
@@ -247,11 +256,6 @@ class PillboxDB {
         ContentValues cv = new ContentValues();
         cv.put("Status_ID", getID("Status", newStatus.toString()));
         sqliteDB.update("Header", cv, "ID = ?", new String[] { Integer.toString(rowID) });
-    }
-
-    static void insertDummyData() {
-        sqliteDB.execSQL("DELETE FROM User");
-        sqliteDB.execSQL("INSERT INTO User Values(NULL, 'Test User', 'Test Description')");
     }
 
     static void insertUser(String name){
