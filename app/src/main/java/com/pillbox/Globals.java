@@ -113,7 +113,8 @@ class Globals {
         // Choose the new starting week
         date.add(Calendar.WEEK_OF_MONTH, weekOffset);
 
-        String[] splitTime = time.split(":");
+        String time24h = reformatDate("hh:mm a", "HH:mm", time);
+        String[] splitTime = time24h.split(":");
         int hours = Integer.parseInt(splitTime[0]);
         int minutes = Integer.parseInt(splitTime[1]);
 
@@ -154,19 +155,24 @@ class Globals {
         return System.currentTimeMillis();
     }
 
-    static void createAlarm(MainActivity context, long triggerTime, String pillName, String pillTime, int alarmCode) {
+    static void createAlarm(Context context, long triggerTime, String pillName, String pillTime, int alarmCode) {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("PillName", pillName);
         intent.putExtra("PillTime", pillTime);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime , pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
     }
 
-    static void deleteAlarm(MainActivity context, int alarmCode) {
-        Intent intent = new Intent(context, AlarmReceiver.class);    //OneShotAlarm is the broadcast receiver you use for alarm
+    static void deleteAlarm(Context context, int alarmCode) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent sender = PendingIntent.getBroadcast(context, alarmCode, intent, 0);
         alarmManager.cancel(sender);
+    }
+
+    static void updateAlarmTime(Context context, long newTime, String pillName, String pillTime, int alarmCode) {
+        deleteAlarm(context, alarmCode);
+        createAlarm(context, newTime, pillName, pillTime, alarmCode);
     }
 
     static void updatePillPic(ImageView icon, byte[] pillPic){

@@ -77,6 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
             android:text="@string/remind_me_button_title"
+            android:onClick="remindMe"
             android:layout_marginEnd="@dimen/text_margin"
             android:textColor="@color/colorAccent"
             android:background="@drawable/remind_me_background"

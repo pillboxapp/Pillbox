@@ -1,6 +1,7 @@
 package com.pillbox;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
@@ -33,17 +34,12 @@ class PillboxDB {
      * and the app should use that instance for its entire lifecycle.
      */
     private static SQLiteDatabase sqliteDB;
-    private static MainActivity context;
     private static final int WEEKS_TO_ADD = 4;
 
     private PillboxDB() { }
 
     static void setDB(SQLiteDatabase newSqliteDB) {
         sqliteDB = newSqliteDB;
-    }
-
-    static void setContext(MainActivity activity) {
-        context = activity;
     }
 
     static void close() {
@@ -111,8 +107,7 @@ class PillboxDB {
                 "Dosage REAL",
                 "Date DATETIME",
                 "Status_ID INTEGER",
-                "Alarm_Code INTEGER",
-                "Alarm_Time INTEGER"
+                "Alarm_Code INTEGER"
             },
             new String[] {
                 "User",
@@ -137,7 +132,7 @@ class PillboxDB {
         sqliteDB.insertOrThrow("Medication", null, cv);
     }
 
-    static void insertMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+    static void insertMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time, Context context) {
         int medicationID = getID("Medication", medicationName);
 
         ContentValues cv = new ContentValues();
@@ -148,10 +143,10 @@ class PillboxDB {
         cv.put("Time", time);
         sqliteDB.insertOrThrow("MedicationSchedule", null, cv);
 
-        insertHeadersForMedication(medicationID, medicationName, dosage, dayOfWeek, time);
+        insertHeadersForMedication(medicationID, medicationName, dosage, dayOfWeek, time, context);
     }
 
-    static void addMissingHeaders() {
+    static void addMissingHeaders(Context context) {
         Cursor cursor = runFormattedQuery("Select MS.User_ID, M.Name MedicationName, MS.Medication_ID, MS.Dosage, MS.Day_Of_Week, MS.Time " +
                 "From MedicationSchedule MS " +
                 "Inner Join Medication M On M.ID = MS.Medication_ID");
@@ -163,11 +158,18 @@ class PillboxDB {
             Globals.DayOfWeek day =  getCursorEnum(cursor, "Day_Of_Week", Globals.DayOfWeek.class);
             String time = getCursorString(cursor, "Time");
 
-            insertHeadersForMedication(userID, medicationID, medicationName, dosage, day, time);
+            insertHeadersForMedication(userID, medicationID, medicationName, dosage, day, time, context);
         }
     }
 
-    static void deleteMedicationSchedule(String medicationName) {
+    static void updatePillTime(int rowID, Date newTime) {
+        ContentValues cv = new ContentValues();
+        cv.put("Date", Globals.formatDate("yyyy-MM-dd HH:mm", newTime));
+        String[] params = { Integer.toString(rowID), Integer.toString(Globals.userID) };
+        sqliteDB.update("Header", cv, "ID = ? and User_ID = ?", params);
+    }
+
+    static void deleteMedicationSchedule(String medicationName, Context context) {
         String medID = getStringID("Medication", medicationName);
         Cursor cursor = runFormattedQuery("Select Alarm_Code From Header Where Medication_ID = {0}", medID);
         while (cursor.moveToNext()) {
@@ -175,21 +177,26 @@ class PillboxDB {
             Globals.deleteAlarm(context, alarmCode);
         }
         String[] params = { Integer.toString(Globals.userID), medID };
-        sqliteDB.delete("MedicationSchedule", "User_ID = ? and Medication_ID = ?", params);
+        int test = sqliteDB.delete("MedicationSchedule", "User_ID = ? and Medication_ID = ?", params);
+        System.out.println(test);
         // Delete all headers in the future
-        sqliteDB.delete("Header", "User_ID = ? and Medication_ID = ? and Date >= datetime(CURRENT_TIMESTAMP, 'localtime')", params);
+        int test2 = sqliteDB.delete("Header", "User_ID = ? and Medication_ID = ? and Date >= datetime(CURRENT_TIMESTAMP, 'localtime')", params);
+        System.out.println(test2);
     }
 
-    static void updateMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
-        deleteMedicationSchedule(medicationName);
-        insertMedicationSchedule(medicationName, dosage, dayOfWeek, time);
+
+    static void updateMedicationSchedule(String oldName, String newName, double dosage, Globals.DayOfWeek dayOfWeek, String time, Context context) {
+        deleteMedicationSchedule(oldName, context);
+        insertMedicationSchedule(newName, dosage, dayOfWeek, time, context);
     }
 
-    private static void insertHeadersForMedication(int medicationID, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
-        insertHeadersForMedication(Globals.userID, medicationID, medicationName, dosage, dayOfWeek, time);
+    private static void insertHeadersForMedication(int medicationID, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek,
+                                                   String time, Context context) {
+        insertHeadersForMedication(Globals.userID, medicationID, medicationName, dosage, dayOfWeek, time, context);
     }
 
-    private static void insertHeadersForMedication(int userID, int medicationID, String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time) {
+    private static void insertHeadersForMedication(int userID, int medicationID, String medicationName, double dosage,
+                                                   Globals.DayOfWeek dayOfWeek, String time, Context context) {
         int statusID = getID("Status", Globals.Status.UPCOMING.toString());
 
         for (int i = 0; i < WEEKS_TO_ADD; i++) {
@@ -206,7 +213,6 @@ class PillboxDB {
                 cv.put("Dosage", dosage);
                 cv.put("Date", pillDateTimeString);
                 cv.put("Alarm_Code", alarmCode);
-                cv.put("Alarm_Time", pillMilliTime);
                 try {
                     sqliteDB.insertOrThrow("Header", null, cv);
 
@@ -451,6 +457,10 @@ class PillboxDB {
 
     private static int getCursorInt(Cursor cursor, String colName) {
         return cursor.getInt(cursor.getColumnIndex(colName));
+    }
+
+    private static long getCursorLong(Cursor cursor, String colName) {
+        return cursor.getLong(cursor.getColumnIndex(colName));
     }
 
     private static double getCursorDouble(Cursor cursor, String colName) {

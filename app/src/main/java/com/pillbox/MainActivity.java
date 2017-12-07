@@ -1,8 +1,10 @@
 package com.pillbox;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
 import com.pillbox.DailyViewRowRecyclerViewAdapter.ViewHolder;
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     private ViewHolder selectedRow;
     private RecyclerView recyclerView;
 
+    private final int NOTIFICATION_DELAY_MINS = 15;
+
     private static boolean initialized = false;
 
     @Override
@@ -50,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
         // Show the current date on the screen to start
         this.setDate(Globals.getCurrentDate());
-
-        PillboxDB.setContext(this);
 
         if (!initialized) {
             Globals.userID = 1;
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
                 // TODO: Remove the following statement when we insert real data
                 //PillboxDB.insertDummyData();
 
-                PillboxDB.addMissingHeaders();
+                PillboxDB.addMissingHeaders(getApplicationContext());
 
                 initialized = true;
             } catch (SQLiteException ex) {
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         int count = recyclerView.getAdapter().getItemCount();
         for (int i = 0; i < count; i++) {
             ViewHolder row = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
-            if (row != null && row.mItem.date.compareTo(Globals.getCurrentDate()) <= 0 &&
+            if (row != null && row.mItem.getDate().compareTo(Globals.getCurrentDate()) <= 0 &&
                     row.mItem.getStatus() == Globals.Status.UPCOMING) {
                 markPillAsReady(row);
             }
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         this.selectedRow = holder;
         DailyViewRow item = holder.mItem;
         String pillText = item.dosage > 1 ? "pills": "pill";
-        String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.displayTime);
+        String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.getDisplayTime());
         BitmapDrawable drawable = (BitmapDrawable) holder.mPillPic.getDrawable();
         Bitmap bitmap = drawable.getBitmap();
         ImageView imageView = findViewById(R.id.detailed_view_image);
@@ -240,29 +243,100 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
     public void skipPill(View view) {
         this.updatePillStatus(Globals.Status.SKIPPED, this.selectedRow);
+        // The pill has been skipped, so no need to show a notification
+        Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
     }
 
     public void takePill(View view) {
         this.updatePillStatus(Globals.Status.TAKEN, this.selectedRow);
+        // The pill has been taken, so no need to show a notification
+        Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
     }
 
+    public void remindMe(View view) {
+        if (selectedRow == null) {
+            return;
+        }
+
+        // Confirm user wants to change pill time
+        AlertDialog alertDialog = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK).create();
+        alertDialog.setTitle("Confirm Changes");
+        alertDialog.setMessage(MessageFormat.format("Take {0} {1} minutes later than scheduled?",
+                selectedRow.mItem.pillName, NOTIFICATION_DELAY_MINS));
+
+        // Setting OK Button
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int i) {
+                updateAlarmTime();
+            }
+        });
+
+        // Setting Cancel button
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    private void updateAlarmTime() {
+        int SECONDS_IN_MINUTE = 60;
+        int MILLIS_IN_SECOND = 1000;
+        long newAlarmTime = selectedRow.mItem.getAlarmTime() + (NOTIFICATION_DELAY_MINS * SECONDS_IN_MINUTE * MILLIS_IN_SECOND);
+
+        int rowID = selectedRow.mItem.rowID;
+        int alarmCode = selectedRow.mItem.alarmCode;
+
+        // Calculate time + new notification time
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(selectedRow.mItem.getDate());
+        calendar.add(Calendar.MINUTE, NOTIFICATION_DELAY_MINS);
+        Date newDate = calendar.getTime();
+        selectedRow.mItem.updateDate(newDate);
+        PillboxDB.updatePillTime(rowID, newDate);
+
+        String pillName = selectedRow.mItem.pillName;
+        String pillTime = selectedRow.mItem.getDisplayTime();
+        String pillDesc = selectedRow.mItem.pillDesc;
+
+        Globals.updateAlarmTime(getApplicationContext(), newAlarmTime, pillName, pillTime, alarmCode);
+
+        // Update UI
+        this.updateDetailedText(pillName, pillDesc, pillTime);
+        this.markPillAsUpcoming();
+
+        DailyViewFragment dailyViewFragment = this.getDailyViewFragment();
+        dailyViewFragment.reloadData();
+    }
+
+
     public void goToEditPill(View view) {
+        if (selectedRow == null || toastIfPillInPast("Cannot edit records in the past")) {
+            return;
+        }
+
         Intent myIntent = new Intent(MainActivity.this, AddPillActivity.class);
         myIntent.putExtra("name", selectedRow.mPillNameView.getText().toString());
         myIntent.putExtra("edit", "yes");
         myIntent.putExtra("dosage", selectedRow.mItem.dosage);
         myIntent.putExtra("desc", selectedRow.mItem.pillDesc);
-        myIntent.putExtra("date", selectedRow.mItem.date);
-        myIntent.putExtra("time", selectedRow.mItem.displayTime);
+        myIntent.putExtra("date", selectedRow.mItem.getDate());
+        myIntent.putExtra("time", selectedRow.mItem.getDisplayTime());
+        myIntent.putExtra("previousName", selectedRow.mItem.pillName);
         MainActivity.this.startActivity(myIntent);
         DailyViewFragment dailyView = this.getDailyViewFragment();
         dailyView.reloadData();
         this.resetDetailedView();
-
     }
 
     public void deletePill(View view) {
-        deleteMedicationSchedule(selectedRow.mPillNameView.getText().toString());
+        if (selectedRow == null || toastIfPillInPast("Cannot delete records in the past")) {
+            return;
+        }
+        deleteMedicationSchedule(selectedRow.mPillNameView.getText().toString(), getApplicationContext());
         DailyViewFragment dailyView = this.getDailyViewFragment();
         dailyView.reloadData();
         this.resetDetailedView();
@@ -271,6 +345,23 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
     public void markPillAsReady(ViewHolder selectedRow) {
         this.updatePillStatus(Globals.Status.TIME_TO_TAKE, selectedRow);
+    }
+
+    public void markPillAsUpcoming() {
+        this.updatePillStatus(Globals.Status.UPCOMING, selectedRow);
+    }
+
+    private boolean toastIfPillInPast(String text) {
+        if (Globals.getCurrentDate().compareTo(selectedRow.mItem.getDate()) >= 0) {
+            this.makeToast(text);
+            return true;
+        }
+        return false;
+    }
+
+    private void makeToast(String text, Object... formatArgs) {
+        Toast toast = Toast.makeText(this, MessageFormat.format(text, formatArgs), Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     private void setDate(Date newDate) {

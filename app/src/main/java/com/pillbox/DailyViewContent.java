@@ -50,23 +50,43 @@ class DailyViewContent {
         final String pillName;
         final String pillDesc;
         final double dosage;
-        final Date date;
-        final String displayTime;
         final byte[] pillPic;
         final int alarmCode;
 
+        private Date date;
+        private String displayTime;
         private Globals.Status statusName;
+        private long alarmTime;
 
-        DailyViewRow(int rowID, String pillName, String pillDesc, double dosage, String date, Globals.Status statusName, byte[] pillPic, int alarmCode) {
+        DailyViewRow(int rowID, String pillName, String pillDesc, double dosage, String date, Globals.Status statusName, byte[] pillPic,
+                     int alarmCode) {
             this.rowID = rowID;
             this.pillName = pillName;
             this.pillDesc = pillDesc;
             this.dosage = dosage;
-            this.date = Globals.parseDate("yyyy-MM-dd HH:mm", date);
-            this.displayTime = Globals.formatDate("hh:mm a", this.date);
             this.statusName = statusName;
             this.pillPic = pillPic;
             this.alarmCode = alarmCode;
+
+            this.updateDate(date);
+        }
+
+        Date getDate() {
+            return this.date;
+        }
+
+        void updateDate(Date newDate) {
+            this.date = newDate;
+            this.displayTime = Globals.formatDate("hh:mm a", this.date);
+            this.alarmTime = this.date.getTime();
+        }
+
+        void updateDate(String newDate) {
+            this.updateDate(Globals.parseDate("yyyy-MM-dd HH:mm", newDate));
+        }
+
+        String getDisplayTime() {
+            return this.displayTime;
         }
 
         void updateStatus(Globals.Status newStatus) {
@@ -75,6 +95,10 @@ class DailyViewContent {
 
         Globals.Status getStatus() {
             return this.statusName;
+        }
+
+        long getAlarmTime() {
+            return this.alarmTime;
         }
 
         @Override

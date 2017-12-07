@@ -38,7 +38,7 @@ public class DailyViewRowRecyclerViewAdapter extends RecyclerView.Adapter<DailyV
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mPillNameView.setText(mValues.get(position).pillName);
-        holder.mDateView.setText(mValues.get(position).displayTime);
+        holder.mDateView.setText(mValues.get(position).getDisplayTime());
 
         Globals.updateStatusImage(holder.mStatusView, mValues.get(position).getStatus());
         Globals.updatePillPic(holder.mPillPic, mValues.get(position).pillPic);

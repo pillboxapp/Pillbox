@@ -32,7 +32,10 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
+import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Locale;
 
 import static com.pillbox.PillboxDB.insertMedication;
 import static com.pillbox.PillboxDB.insertMedicationSchedule;
@@ -96,7 +99,9 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         mTimePicker = new TimePickerDialog(AddPillActivity.this, AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                editTime.setText(String.format("%02d", selectedHour) + ":" + String.format("%02d", selectedMinute));
+                //.setText(String.format("%02d", selectedHour) + ":" + String.format("%02d", selectedMinute));
+                editTime.setText(Globals.reformatDate("HH:mm", "hh:mm a",
+                        String.format(Locale.ENGLISH, "%02d:%02d", selectedHour, selectedMinute)));
             }
         }, hour, minute, false);
         mTimePicker.setTitle("Select Time");
@@ -171,10 +176,6 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
             }
             goToMainActivity();
         }
-        //insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.FRIDAY, editTime.getText().toString());
-
-        //PillboxDB.insertMedicationSchedule("Test User", pillText.getText().toString(), Integer.parseInt(dosageText.getText().toString()), Globals.DayOfWeek.TUESDAY, editTime.getText().toString());
-
     }
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -232,10 +233,12 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
     private void createMedicationForDay(Globals.DayOfWeek day) {
         Bundle extras = getIntent().getExtras();
-        if (extras.getString("edit").equals("yes")) {
-            updateMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
+        if (extras != null && extras.getString("edit").equals("yes")) {
+            updateMedicationSchedule(extras.getString("previousName"), pillText.getText().toString(),
+                    Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString(), getApplicationContext());
         } else {
-            insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day, editTime.getText().toString());
+            insertMedicationSchedule(pillText.getText().toString(), Double.parseDouble(dosageText.getText().toString()), day,
+                    editTime.getText().toString(), getApplicationContext());
 
         }
     }
