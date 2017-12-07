@@ -17,7 +17,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageButton
@@ -49,45 +49,50 @@
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="goToAddPill"
-        android:background="@drawable/add_pill_background"
-        android:textColor="@color/colorAccent"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:text="@string/add_pill_button_title" />
+        android:gravity="center|top"
+        android:orientation="horizontal">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="goToEditPill"
-        android:background="@drawable/edit_pill_background"
-        android:textColor="@color/colorAccent"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:text="Edit Current Pill" />
+        <Button
+            android:id="@+id/add_pill"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/add_pill_background"
+            android:onClick="goToAddPill"
+            android:text="@string/add_pill_button_title"
+            android:textColor="@color/colorAccent" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="deletePill"
-        android:background="@drawable/delete_pill_background"
-        android:textColor="@color/colorAccent"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:text="Delete Current Pill" />
+        <Button
+            android:id="@+id/edit_pill"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/edit_pill_background"
+            android:onClick="goToEditPill"
+            android:text="Edit Pill"
+            android:textColor="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/delete_pill"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/delete_pill_background"
+            android:onClick="deletePill"
+            android:text="Delete Pill"
+            android:textColor="@color/colorAccent" />
+
+    </LinearLayout>
 
     <fragment class="com.pillbox.DetailedViewFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1.3"
         android:id="@+id/detailed_view_fragment"
-        android:layout_marginBottom="@dimen/text_margin"
+        android:layout_marginBottom="5dp"
         tools:layout="@layout/fragment_detailed_view"/>
 
     <fragment class="com.pillbox.DailyViewFragment"
@@ -125,6 +130,4 @@
                 style="?android:buttonBarButtonStyle"/>
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
-
-
 </LinearLayout>
