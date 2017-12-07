@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             Globals.alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
             try {
                 // TODO: Remove the following statement when done changing the database
-                //this.deleteDatabase(getResources().getString(R.string.db_name));
+                this.deleteDatabase(getResources().getString(R.string.db_name));
 
                 sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
 
@@ -255,12 +255,26 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         this.updatePillStatus(Globals.Status.SKIPPED, this.selectedRow);
         // The pill has been skipped, so no need to show a notification
         Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
+
+        Date takenTime = Calendar.getInstance().getTime();
+        selectedRow.mItem.updateDate(takenTime);
+        PillboxDB.updatePillTime(selectedRow.mItem.rowID, takenTime);
+
+        DailyViewFragment dailyViewFragment = this.getDailyViewFragment();
+        dailyViewFragment.reloadData();
     }
 
     public void takePill(View view) {
         this.updatePillStatus(Globals.Status.TAKEN, this.selectedRow);
         // The pill has been taken, so no need to show a notification
         Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
+
+        Date takenTime = Calendar.getInstance().getTime();
+        selectedRow.mItem.updateDate(takenTime);
+        PillboxDB.updatePillTime(selectedRow.mItem.rowID, takenTime);
+
+        DailyViewFragment dailyViewFragment = this.getDailyViewFragment();
+        dailyViewFragment.reloadData();
     }
 
     public void remindMe(View view) {
