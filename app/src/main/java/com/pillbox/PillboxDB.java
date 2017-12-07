@@ -58,7 +58,8 @@ class PillboxDB {
                 "User"
             },
             new String[] {
-                "Name"
+                "Name",
+                "User_ID"
             }
         );
 
@@ -149,7 +150,7 @@ class PillboxDB {
     }
 
     static void insertMedicationSchedule(String medicationName, double dosage, Globals.DayOfWeek dayOfWeek, String time, Context context) {
-        int medicationID = getID("Medication", medicationName);
+        int medicationID = getMedicationID("Medication", medicationName);
 
         ContentValues cv = new ContentValues();
         cv.put("User_ID", Globals.userID);
@@ -186,7 +187,7 @@ class PillboxDB {
     }
 
     static void deleteMedicationSchedule(String medicationName, Context context) {
-        String medID = getStringID("Medication", medicationName);
+        String medID = Integer.toString(getMedicationID("Medication", medicationName));
         Cursor cursor = runFormattedQuery("Select Alarm_Code From Header Where Medication_ID = {0}", medID);
         while (cursor.moveToNext()) {
             int alarmCode = getCursorInt(cursor, "Alarm_Code");
@@ -503,7 +504,13 @@ class PillboxDB {
         return id;
     }
 
-    private static String getStringID(String table, String name) {
-        return Integer.toString(getID(table, name));
+    private static int getMedicationID(String table, String name) {
+        Cursor cursor = runFormattedQuery("Select ID From {0} Where Name = ''{1}'' and User_ID = ''{2}''", table, name, Globals.userID);
+        int id = 0;
+        while (cursor.moveToNext()) {
+            id = getCursorInt(cursor, "ID");
+        }
+
+        return id;
     }
 }
