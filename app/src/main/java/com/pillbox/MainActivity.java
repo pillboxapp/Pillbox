@@ -255,13 +255,6 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         this.updatePillStatus(Globals.Status.SKIPPED, this.selectedRow);
         // The pill has been skipped, so no need to show a notification
         Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
-
-        Date takenTime = Calendar.getInstance().getTime();
-        selectedRow.mItem.updateDate(takenTime);
-        PillboxDB.updatePillTime(selectedRow.mItem.rowID, takenTime);
-
-        DailyViewFragment dailyViewFragment = this.getDailyViewFragment();
-        dailyViewFragment.reloadData();
     }
 
     public void takePill(View view) {
