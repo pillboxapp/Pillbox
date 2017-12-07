@@ -16,7 +16,7 @@
     <color name="checkboxes">#F44641</color>
 
     <color name="skippedIndicator">#FF0000</color>
-    <color name="timeToTakeIndicator">#DDDD00</color>
+    <color name="timeToTakeIndicator">#FFCC00</color>
     <color name="takenIndicator">#00FF00</color>
     <color name="upcomingIndicator">#999999</color>
 

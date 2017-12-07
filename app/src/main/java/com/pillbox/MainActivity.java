@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pillbox.DailyViewContent.DailyViewRow;
 import com.pillbox.DailyViewRowRecyclerViewAdapter.ViewHolder;
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             return;
         }
         int count = recyclerView.getAdapter().getItemCount();
+
         for (int i = 0; i < count; i++) {
             ViewHolder row = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
             if (row != null && row.mItem.date.compareTo(Globals.getCurrentDate()) <= 0 &&
@@ -219,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         this.setDate(date);
         DailyViewFragment dailyView = this.getDailyViewFragment();
         dailyView.reloadData();
+        this.setRecyclerViewVisibility();
         this.resetDetailedView();
     }
 
@@ -247,25 +250,35 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     }
 
     public void goToEditPill(View view) {
-        Intent myIntent = new Intent(MainActivity.this, AddPillActivity.class);
-        myIntent.putExtra("name", selectedRow.mPillNameView.getText().toString());
-        myIntent.putExtra("edit", "yes");
-        myIntent.putExtra("dosage", selectedRow.mItem.dosage);
-        myIntent.putExtra("desc", selectedRow.mItem.pillDesc);
-        myIntent.putExtra("date", selectedRow.mItem.date);
-        myIntent.putExtra("time", selectedRow.mItem.displayTime);
-        MainActivity.this.startActivity(myIntent);
-        DailyViewFragment dailyView = this.getDailyViewFragment();
-        dailyView.reloadData();
-        this.resetDetailedView();
+        if(selectedRow != null){
+            Intent myIntent = new Intent(MainActivity.this, AddPillActivity.class);
+            myIntent.putExtra("name", selectedRow.mPillNameView.getText().toString());
+            myIntent.putExtra("edit", "yes");
+            myIntent.putExtra("dosage", selectedRow.mItem.dosage);
+            myIntent.putExtra("desc", selectedRow.mItem.pillDesc);
+            myIntent.putExtra("date", selectedRow.mItem.date);
+            myIntent.putExtra("time", selectedRow.mItem.displayTime);
+            MainActivity.this.startActivity(myIntent);
+            DailyViewFragment dailyView = this.getDailyViewFragment();
+            dailyView.reloadData();
+            this.setRecyclerViewVisibility();
+            this.resetDetailedView();
+        }else{
+            Toast.makeText(this, "Must select pill first.", Toast.LENGTH_LONG).show();
+        }
 
     }
 
     public void deletePill(View view) {
-        deleteMedicationSchedule(selectedRow.mPillNameView.getText().toString());
-        DailyViewFragment dailyView = this.getDailyViewFragment();
-        dailyView.reloadData();
-        this.resetDetailedView();
+        if(selectedRow != null){
+            deleteMedicationSchedule(selectedRow.mPillNameView.getText().toString());
+            DailyViewFragment dailyView = this.getDailyViewFragment();
+            dailyView.reloadData();
+            this.setRecyclerViewVisibility();
+            this.resetDetailedView();
+        }else{
+            Toast.makeText(this, "Must select pill before it can be deleted.", Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -287,6 +300,17 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
                 changeDate(date);
 
             }
+        }
+    }
+
+    public void setRecyclerViewVisibility(){
+        TextView textview = findViewById(R.id.recycler_empty_view);
+        if(recyclerView.getAdapter().getItemCount() == 0){
+            this.recyclerView.setVisibility(View.GONE);
+            textview.setVisibility(View.VISIBLE);
+        }else{
+            this.recyclerView.setVisibility(View.VISIBLE);
+            textview.setVisibility(View.GONE);
         }
     }
 }
