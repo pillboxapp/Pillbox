@@ -110,139 +110,115 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.216" />
 
-    <CheckBox
-        android:id="@+id/sundayBox"
-        android:layout_width="87dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Sunday"
-        android:buttonTint="@color/checkboxes"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/wednesdayBox"
-        app:layout_constraintHorizontal_bias="0.029"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.686" />
-
-    <CheckBox
-        android:id="@+id/tuesdayBox"
-        android:layout_width="92dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Tuesday"
-        android:buttonTint="@color/checkboxes"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/wednesdayBox"
-        app:layout_constraintHorizontal_bias="0.711"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.686" />
-
-    <CheckBox
-        android:id="@+id/wednesdayBox"
-        android:layout_width="92dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Wednesday"
-        android:buttonTint="@color/checkboxes"
-        android:textSize="11sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.971"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.686" />
-
-    <CheckBox
-        android:id="@+id/saturdayBox"
-        android:layout_width="112dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Saturday"
-        android:buttonTint="@color/checkboxes"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.968"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.807" />
-
-    <CheckBox
-        android:id="@+id/fridayBox"
-        android:layout_width="112dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Friday"
-        android:buttonTint="@color/checkboxes"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.804" />
-
-    <CheckBox
-        android:id="@+id/thursdayBox"
-        android:layout_width="112dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Thursday"
-        android:buttonTint="@color/checkboxes"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/saturdayBox"
-        app:layout_constraintHorizontal_bias="0.033"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.804" />
-
-    <CheckBox
-        android:id="@+id/everyOtherBox"
-        android:layout_width="112dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:onClick="everyCheck"
-        android:text="Everyday"
-        android:buttonTint="@color/checkboxes"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descText"
-        app:layout_constraintVertical_bias="0.067" />
-
-    <CheckBox
-        android:id="@+id/mondayBox"
-        android:layout_width="112dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginTop="8dp"
-        android:text="Monday"
-        android:buttonTint="@color/checkboxes"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tuesdayBox"
+        app:layout_constraintEnd_toEndOf="@id/descText"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/sundayBox"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.686" />
+        app:layout_constraintVertical_bias="0.645">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/everyOtherBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:buttonTint="@color/checkboxes"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:onClick="everyCheck"
+                android:textOff="ALL"
+                android:textOn="ALL" />
+
+            <ToggleButton
+                android:id="@+id/sundayBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:textOff="SUN"
+                android:textOn="SUN" />
+
+            <ToggleButton
+                android:id="@+id/mondayBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:textOff="MON"
+                android:textOn="MON" />
+
+            <ToggleButton
+                android:id="@+id/tuesdayBox"
+                android:layout_marginRight="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:textOff="TUE"
+                android:textOn="TUE" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/wednesdayBox"
+                android:layout_marginLeft="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:textOff="WED"
+                android:textOn="WED" />
+
+            <ToggleButton
+                android:id="@+id/thursdayBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:textOff="THU"
+                android:textOn="THU" />
+
+            <ToggleButton
+                android:id="@+id/fridayBox"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:textOff="FRI"
+                android:textOn="FRI" />
+
+
+            <ToggleButton
+                android:id="@+id/saturdayBox"
+                android:layout_marginRight="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.ToggleButton"
+                android:textOff="SAT"
+                android:textOn="SAT" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
 
 </android.support.constraint.ConstraintLayout>
 
