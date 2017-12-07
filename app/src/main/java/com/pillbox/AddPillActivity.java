@@ -159,6 +159,20 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
             try {
                 String pillName = pillText.getText().toString();
                 String description = descText.getText().toString();
+
+                if (pillName.length() == 0) {
+                    Toast.makeText(this, "Pill name must be entered", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (dosageText.getText().toString().length() == 0) {
+                    Toast.makeText(this, "Dosage must be entered", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (editTime.getText().toString().length() == 0) {
+                    Toast.makeText(this, "Time must be entered", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 // Add new pill
                 if (extras == null || extras.getString("edit") == null) {
                     PillboxDB.insertMedication(pillName, description, this.getImageArray());
@@ -188,26 +202,39 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
             }
             else
             {
+                boolean dayChecked = false;
                 if (sundayCheckBox.isChecked()) {
                     createMedicationForDay(Globals.DayOfWeek.SUNDAY);
+                    dayChecked = true;
                 }
                 if (mondayCheckBox.isChecked()) {
                     createMedicationForDay(Globals.DayOfWeek.MONDAY);
+                    dayChecked = true;
                 }
                 if (tuesdayCheckBox.isChecked()) {
                     createMedicationForDay(Globals.DayOfWeek.TUESDAY);
+                    dayChecked = true;
                 }
                 if (wednesdayCheckBox.isChecked()) {
                     createMedicationForDay(Globals.DayOfWeek.WEDNESDAY);
+                    dayChecked = true;
                 }
                 if (thursdayCheckBox.isChecked()) {
                     createMedicationForDay(Globals.DayOfWeek.THURSDAY);
+                    dayChecked = true;
                 }
                 if (fridayCheckBox.isChecked()) {
                     createMedicationForDay(Globals.DayOfWeek.FRIDAY);
+                    dayChecked = true;
                 }
                 if (saturdayCheckBox.isChecked()) {
                     createMedicationForDay(Globals.DayOfWeek.SATURDAY);
+                    dayChecked = true;
+                }
+
+                if (!dayChecked) {
+                    Toast.makeText(this, "At least one day must be selected", Toast.LENGTH_LONG).show();
+                    return;
                 }
             }
             goToMainActivity();
