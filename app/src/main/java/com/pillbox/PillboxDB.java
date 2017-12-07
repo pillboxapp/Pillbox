@@ -110,6 +110,7 @@ class PillboxDB {
                 "Medication_ID INTEGER",
                 "Dosage REAL",
                 "Date DATETIME",
+                "Original_Date DATETIME",
                 "Status_ID INTEGER",
                 "Alarm_Code INTEGER"
             },
@@ -121,7 +122,7 @@ class PillboxDB {
             new String[] {
                 "User_ID",
                 "Medication_ID",
-                "Date"
+                "Original_Date"
             }
         );
 
@@ -222,6 +223,7 @@ class PillboxDB {
                 cv.put("Status_ID", statusID);
                 cv.put("Dosage", dosage);
                 cv.put("Date", pillDateTimeString);
+                cv.put("Original_Date", pillDateTimeString);
                 cv.put("Alarm_Code", alarmCode);
                 try {
                     sqliteDB.insertOrThrow("Header", null, cv);

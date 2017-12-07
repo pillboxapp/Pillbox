@@ -252,19 +252,27 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     }
 
     public void skipPill(View view) {
+        if (selectedRow == null) {
+            Toast.makeText(this, "No pill selected", Toast.LENGTH_LONG).show();
+            return;
+        }
         this.updatePillStatus(Globals.Status.SKIPPED, this.selectedRow);
         // The pill has been skipped, so no need to show a notification
         Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
     }
 
     public void takePill(View view) {
+        if (selectedRow == null) {
+            Toast.makeText(this, "No pill selected", Toast.LENGTH_LONG).show();
+            return;
+        }
         Calendar pillTime = Calendar.getInstance();
         pillTime.setTime(selectedRow.mItem.getDate());
         if (pillTime.get(Calendar.DAY_OF_YEAR) > Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
             Toast.makeText(this, "Cannot take pills scheduled on a future day", Toast.LENGTH_LONG).show();
             return;
         }
-        
+
         this.updatePillStatus(Globals.Status.TAKEN, this.selectedRow);
         // The pill has been taken, so no need to show a notification
         Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
@@ -279,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
     public void remindMe(View view) {
         if (selectedRow == null) {
+            Toast.makeText(this, "No pill selected", Toast.LENGTH_LONG).show();
             return;
         }
 
