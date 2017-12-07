@@ -72,6 +72,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/edit_pill_background"
             android:onClick="goToEditPill"
             android:text="Edit Pill"
