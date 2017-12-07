@@ -28,7 +28,7 @@ public class GreenDecorator implements DayViewDecorator {
     private final Calendar calendar = Calendar.getInstance();
     private  Drawable highlightDrawable;
     private  ShapeDrawable circleDrawable;
-    private static final int color = Color.parseColor("#00ff00");
+    private static final int color = Color.parseColor("#00AA00");
     HashSet<CalendarDay> dates;
 
     public GreenDecorator() throws ParseException {
@@ -46,7 +46,7 @@ public class GreenDecorator implements DayViewDecorator {
         circleDrawable = new ShapeDrawable (new OvalShape ());
         circleDrawable.setIntrinsicHeight(5);
         circleDrawable.setIntrinsicWidth (5);
-        circleDrawable.setAlpha(50);
+        circleDrawable.setAlpha(200);
         circleDrawable.getPaint ().setColor (color);
     }
     @Override

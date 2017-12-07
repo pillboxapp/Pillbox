@@ -47,7 +47,7 @@ public class RedDecorator implements DayViewDecorator {
         circleDrawable = new ShapeDrawable (new OvalShape ());
         circleDrawable.setIntrinsicHeight(5);
         circleDrawable.setIntrinsicWidth (5);
-        circleDrawable.setAlpha(50);
+        circleDrawable.setAlpha(200);
         circleDrawable.getPaint ().setColor (color);
     }
     @Override
