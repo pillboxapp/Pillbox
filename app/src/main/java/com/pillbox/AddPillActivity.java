@@ -168,6 +168,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
             }
             catch (SQLiteConstraintException ex) {
                 Toast.makeText(this, "Pill name already exists", Toast.LENGTH_LONG).show();
+                return;
             }
             if(everydayCheckBox.isChecked())
             {

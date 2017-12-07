@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             Globals.alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
             try {
                 // TODO: Remove the following statement when done changing the database
-                //this.deleteDatabase(getResources().getString(R.string.db_name));
+                this.deleteDatabase(getResources().getString(R.string.db_name));
 
                 sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
 
@@ -153,13 +153,11 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     public void onListFragmentInteraction(ViewHolder holder) {
         this.selectedRow = holder;
         DailyViewRow item = holder.mItem;
-        String pillText = item.dosage > 1 ? "pills": "pill";
-        String pillTime = MessageFormat.format("Take {0} {1} at {2}", item.dosage, pillText, item.getDisplayTime());
         BitmapDrawable drawable = (BitmapDrawable) holder.mPillPic.getDrawable();
-        this.updateDetailedText(item.pillName, item.pillDesc, pillTime, drawable);
+        this.updateDetailedText(item.pillName, item.pillDesc, item.getDisplayTime(), item.dosage, drawable);
     }
 
-    private void updateDetailedText(String pillName, String pillDesc, String pillTime, BitmapDrawable drawable) {
+    private void updateDetailedText(String pillName, String pillDesc, String displayTime, double dosage, BitmapDrawable drawable) {
         TextView description = findViewById(R.id.detailed_view_pill_description);
         TextView name = findViewById(R.id.detailed_view_pill_name);
         TextView time = findViewById(R.id.detailed_view_pill_time);
@@ -167,7 +165,14 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
 
         name.setText(pillName);
         description.setText(pillDesc);
-        time.setText(pillTime);
+        if (dosage > 0) {
+            String pillText = dosage > 1 ? "pills" : "pill";
+            String pillTime = MessageFormat.format("Take {0} {1} at {2}", dosage, pillText, displayTime);
+            time.setText(pillTime);
+        }
+        else {
+            time.setText("");
+        }
         if (drawable != null) {
             imageView.setImageBitmap(drawable.getBitmap());
         }
@@ -177,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     }
 
     private void resetDetailedView() {
-        this.updateDetailedText("", "", "", null);
+        this.updateDetailedText("", "", "", 0, null);
     }
 
     public void goToCalendar(View view) {
@@ -306,12 +311,13 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
         String pillName = selectedRow.mItem.pillName;
         String pillTime = selectedRow.mItem.getDisplayTime();
         String pillDesc = selectedRow.mItem.pillDesc;
+        double dosage = selectedRow.mItem.dosage;
         BitmapDrawable drawable = (BitmapDrawable)selectedRow.mPillPic.getDrawable();
 
         Globals.updateAlarmTime(getApplicationContext(), newAlarmTime, pillName, pillTime, alarmCode);
 
         // Update UI
-        this.updateDetailedText(pillName, pillDesc, pillTime, drawable);
+        this.updateDetailedText(pillName, pillDesc, pillTime, dosage, drawable);
         this.markPillAsUpcoming();
 
         DailyViewFragment dailyViewFragment = this.getDailyViewFragment();
