@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             Globals.alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
             try {
                 // TODO: Remove the following statement when done changing the database
-                //this.deleteDatabase(getResources().getString(R.string.db_name));
+                this.deleteDatabase(getResources().getString(R.string.db_name));
 
                 sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
 
@@ -258,6 +258,13 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
     }
 
     public void takePill(View view) {
+        Calendar pillTime = Calendar.getInstance();
+        pillTime.setTime(selectedRow.mItem.getDate());
+        if (pillTime.get(Calendar.DAY_OF_YEAR) > Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+            Toast.makeText(this, "Cannot take pills scheduled on a future day", Toast.LENGTH_LONG).show();
+            return;
+        }
+        
         this.updatePillStatus(Globals.Status.TAKEN, this.selectedRow);
         // The pill has been taken, so no need to show a notification
         Globals.deleteAlarm(getApplicationContext(), this.selectedRow.mItem.alarmCode);
