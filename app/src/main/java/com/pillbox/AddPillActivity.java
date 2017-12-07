@@ -30,6 +30,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import org.w3c.dom.Text;
 
@@ -46,7 +47,7 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
 
     EditText pillText, descText, dosageText, editTime;
     Button createButton;
-    CheckBox sundayCheckBox, mondayCheckBox, tuesdayCheckBox, wednesdayCheckBox, thursdayCheckBox, fridayCheckBox, saturdayCheckBox, everydayCheckBox;
+    ToggleButton sundayCheckBox, mondayCheckBox, tuesdayCheckBox, wednesdayCheckBox, thursdayCheckBox, fridayCheckBox, saturdayCheckBox, everydayCheckBox;
     ImageButton imageButton;
     Boolean image_selected;
     private static final int MY_CAMERA_REQUEST_CODE = 100;
@@ -65,14 +66,14 @@ public class AddPillActivity extends AppCompatActivity implements View.OnClickLi
         editTime = (EditText)findViewById(R.id.editTime);
         dosageText = (EditText)findViewById(R.id.dosageText);
         createButton = (Button)findViewById(R.id.createButton);
-        sundayCheckBox = (CheckBox)findViewById(R.id.sundayBox);
-        mondayCheckBox = (CheckBox)findViewById(R.id.mondayBox);
-        tuesdayCheckBox = (CheckBox)findViewById(R.id.tuesdayBox);
-        wednesdayCheckBox = (CheckBox)findViewById(R.id.wednesdayBox);
-        thursdayCheckBox = (CheckBox)findViewById(R.id.thursdayBox);
-        fridayCheckBox = (CheckBox)findViewById(R.id.fridayBox);
-        saturdayCheckBox = (CheckBox)findViewById(R.id.saturdayBox);
-        everydayCheckBox = (CheckBox)findViewById(R.id.everyOtherBox);
+        sundayCheckBox = (ToggleButton)findViewById(R.id.sundayBox);
+        mondayCheckBox = (ToggleButton)findViewById(R.id.mondayBox);
+        tuesdayCheckBox = (ToggleButton)findViewById(R.id.tuesdayBox);
+        wednesdayCheckBox = (ToggleButton)findViewById(R.id.wednesdayBox);
+        thursdayCheckBox = (ToggleButton)findViewById(R.id.thursdayBox);
+        fridayCheckBox = (ToggleButton)findViewById(R.id.fridayBox);
+        saturdayCheckBox = (ToggleButton)findViewById(R.id.saturdayBox);
+        everydayCheckBox = (ToggleButton)findViewById(R.id.everyOtherBox);
 
         imageButton = (ImageButton) findViewById(R.id.imgButton);
         createButton.setOnClickListener(this);
