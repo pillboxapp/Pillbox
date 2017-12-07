@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements DailyViewFragment
             Globals.alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
             try {
                 // TODO: Remove the following statement when done changing the database
-                this.deleteDatabase(getResources().getString(R.string.db_name));
+                //this.deleteDatabase(getResources().getString(R.string.db_name));
 
                 sqliteDB = this.openOrCreateDatabase(getResources().getString(R.string.db_name), MODE_PRIVATE, null);
 
