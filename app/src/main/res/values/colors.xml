@@ -7,10 +7,13 @@
     <color name="skipPill">#F44641</color>
     <color name="remindMe">#0BA9F4</color>
     <color name="takePill">#A9CE2F</color>
-    <color name="addPill">#2d337a</color>
-
+    <color name="addPill">#A9CE2F</color>
+    <color name="confirmPill">#2d337a</color>
+    <color name="editPill">#0BA9F4</color>
     <color name="deletePill">#F44641</color>
-    <color name="editPill">#F44641</color>
+
+
+    <color name="checkboxes">#F44641</color>
 
     <color name="skippedIndicator">#FF0000</color>
     <color name="timeToTakeIndicator">#DDDD00</color>
