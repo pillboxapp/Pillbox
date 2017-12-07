@@ -54,15 +54,14 @@
         android:layout_height="wrap_content"
         android:gravity="center|top"
         android:orientation="horizontal">
-
         <Button
-            android:id="@+id/add_pill"
+            android:id="@+id/delete_pill"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/add_pill_background"
-            android:onClick="goToAddPill"
-            android:text="@string/add_pill_button_title"
+            android:background="@drawable/delete_pill_background"
+            android:onClick="deletePill"
+            android:text="Delete Pill"
             android:textColor="@color/colorAccent" />
 
         <Button
@@ -76,14 +75,15 @@
             android:textColor="@color/colorAccent" />
 
         <Button
-            android:id="@+id/delete_pill"
+            android:id="@+id/add_pill"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/delete_pill_background"
-            android:onClick="deletePill"
-            android:text="Delete Pill"
+            android:background="@drawable/add_pill_background"
+            android:onClick="goToAddPill"
+            android:text="@string/add_pill_button_title"
             android:textColor="@color/colorAccent" />
+
 
     </LinearLayout>
 
